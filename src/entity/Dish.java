@@ -1,16 +1,16 @@
 package entity;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
 public class Dish {
     private String id;
     private String name;
-    private int unitPrice;
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private BigDecimal unitPrice;
+    private List<Ingredient> ingredients;
 
-    public Dish(String id, String name, int unitPrice, List<Ingredient> ingredients) {
+    public Dish(String id, String name, BigDecimal unitPrice, List<Ingredient> ingredients) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
@@ -33,11 +33,11 @@ public class Dish {
         this.name = name;
     }
 
-    public int getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(int unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -51,10 +51,9 @@ public class Dish {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return unitPrice == dish.unitPrice && Objects.equals(id, dish.id) && Objects.equals(name, dish.name) && Objects.equals(ingredients, dish.ingredients);
+        return Objects.equals(id, dish.id) && Objects.equals(name, dish.name) && Objects.equals(unitPrice, dish.unitPrice) && Objects.equals(ingredients, dish.ingredients);
     }
 
     @Override

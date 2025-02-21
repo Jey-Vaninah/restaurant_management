@@ -15,12 +15,12 @@ public class DishRepository implements Repository<Dish> {
         this.connection = connection;
     }
 
-    private Dish resultSetToDish(ResultSet rs) throws SQLException {
+    private Dish mapResultSetToDish(ResultSet rs) throws SQLException {
         return new Dish(
-                rs.getString("id"),
-                rs.getString("name"),
-                rs.getInt("price"),
-                new ArrayList<>()
+            rs.getString("id"),
+            rs.getString("name"),
+            rs.getBigDecimal("price"),
+            new ArrayList<>() //TODO: get list of ingredient
         );
     }
 
@@ -32,7 +32,7 @@ public class DishRepository implements Repository<Dish> {
             st.setString(1, id);
             ResultSet rs = st.executeQuery();
             if(rs.next()) {
-                return resultSetToDish(rs);
+                return mapResultSetToDish(rs);
             }
             return null;
         }catch (SQLException e){

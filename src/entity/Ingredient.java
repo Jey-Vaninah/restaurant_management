@@ -1,21 +1,45 @@
 package entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Ingredient {
     private String id;
     private String name;
-    private LocalDateTime lastModified;
-    private double price;
-    private Unit UnitType;
+    private LocalDateTime updatedAt;
+    private BigDecimal price;
+    private Unit unit;
 
-    public Ingredient(String id, String name, LocalDateTime lastModified, double price, Unit unitType) {
+    public Ingredient(String id, String name, LocalDateTime updatedAt, BigDecimal price, Unit unit) {
         this.id = id;
         this.name = name;
-        this.lastModified = lastModified;
+        this.updatedAt = updatedAt;
         this.price = price;
-        UnitType = unitType;
+        this.unit = unit;
+    }
+
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", updatedAt=" + updatedAt +
+                ", price=" + price +
+                ", unit=" + unit +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(price, that.price) && unit == that.unit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, updatedAt, price, unit);
     }
 
     public String getId() {
@@ -34,51 +58,27 @@ public class Ingredient {
         this.name = name;
     }
 
-    public LocalDateTime getLastModified() {
-        return lastModified;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
-    public Unit getUnitType() {
-        return UnitType;
+    public Unit getUnit() {
+        return unit;
     }
 
-    public void setUnitType(Unit unitType) {
-        UnitType = unitType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ingredient that = (Ingredient) o;
-        return id == that.id && Double.compare(price, that.price) == 0 && Objects.equals(name, that.name) && Objects.equals(lastModified, that.lastModified) && UnitType == that.UnitType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, lastModified, price, UnitType);
-    }
-
-    @Override
-    public String toString() {
-        return "Ingredient{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastModified=" + lastModified +
-                ", price=" + price +
-                ", UnitType=" + UnitType +
-                '}';
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 }
