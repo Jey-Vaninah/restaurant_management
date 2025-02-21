@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Ingredient {
-    private int id;
+    private String id;
     private String name;
     private LocalDateTime lastModified;
     private double price;
-    private UnitType UnitType;
+    private Unit UnitType;
 
-    public Ingredient(int id, String name, LocalDateTime lastModified, double price, entity.UnitType unitType) {
+    public Ingredient(String id, String name, LocalDateTime lastModified, double price, Unit unitType) {
         this.id = id;
         this.name = name;
         this.lastModified = lastModified;
@@ -18,11 +18,11 @@ public class Ingredient {
         UnitType = unitType;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -50,11 +50,11 @@ public class Ingredient {
         this.price = price;
     }
 
-    public entity.UnitType getUnitType() {
+    public Unit getUnitType() {
         return UnitType;
     }
 
-    public void setUnitType(entity.UnitType unitType) {
+    public void setUnitType(Unit unitType) {
         UnitType = unitType;
     }
 

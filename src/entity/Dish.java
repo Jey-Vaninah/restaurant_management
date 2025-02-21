@@ -1,23 +1,26 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Dish {
-    private int id;
+    private String id;
     private String name;
-    private int price;
+    private int unitPrice;
+    private List<Ingredient> ingredients = new ArrayList<>();
 
-    public Dish(int id, String name, int price) {
+    public Dish(String id, String name, int unitPrice) {
         this.id = id;
         this.name = name;
-        this.price = price;
+        this.unitPrice = unitPrice;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -29,12 +32,12 @@ public class Dish {
         this.name = name;
     }
 
-    public int getPrice() {
-        return price;
+    public int getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setUnitPrice(int price) {
+        this.unitPrice = unitPrice;
     }
 
     @Override
@@ -42,12 +45,12 @@ public class Dish {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return id == dish.id && price == dish.price && Objects.equals(name, dish.name);
+        return id == dish.id && unitPrice == dish.unitPrice && Objects.equals(name, dish.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price);
+        return Objects.hash(id, name, unitPrice);
     }
 
     @Override
@@ -55,7 +58,7 @@ public class Dish {
         return "Dish{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", price=" + price +
+                ", unitPrice=" + unitPrice +
                 '}';
     }
 }
