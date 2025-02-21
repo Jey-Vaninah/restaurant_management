@@ -7,14 +7,14 @@ import java.util.Objects;
 public class Ingredient {
     private String id;
     private String name;
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedDatetime;
     private BigDecimal price;
     private Unit unit;
 
-    public Ingredient(String id, String name, LocalDateTime updatedAt, BigDecimal price, Unit unit) {
+    public Ingredient(String id, String name, LocalDateTime updatedDatetime, BigDecimal price, Unit unit) {
         this.id = id;
         this.name = name;
-        this.updatedAt = updatedAt;
+        this.updatedDatetime = updatedDatetime;
         this.price = price;
         this.unit = unit;
     }
@@ -24,7 +24,7 @@ public class Ingredient {
         return "Ingredient{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", updatedAt=" + updatedAt +
+                ", updatedDatetime=" + updatedDatetime +
                 ", price=" + price +
                 ", unit=" + unit +
                 '}';
@@ -34,12 +34,12 @@ public class Ingredient {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(price, that.price) && unit == that.unit;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updatedDatetime, that.updatedDatetime) && Objects.equals(price, that.price) && unit == that.unit;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, updatedAt, price, unit);
+        return Objects.hash(id, name, updatedDatetime, price, unit);
     }
 
     public String getId() {
@@ -58,12 +58,12 @@ public class Ingredient {
         this.name = name;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getUpdatedDatetime() {
+        return updatedDatetime;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdatedDatetime(LocalDateTime updatedDatetime) {
+        this.updatedDatetime = updatedDatetime;
     }
 
     public BigDecimal getPrice() {

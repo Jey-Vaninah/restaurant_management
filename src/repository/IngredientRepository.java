@@ -19,7 +19,7 @@ public class IngredientRepository implements Repository<Ingredient> {
         return new Ingredient(
             rs.getString("id"),
             rs.getString("name"),
-            rs.getTimestamp("updatedAt").toLocalDateTime(),
+            rs.getTimestamp("updated_datetime").toLocalDateTime(),
             rs.getBigDecimal("price"),
             Unit.valueOf(rs.getString("unit"))
         );
