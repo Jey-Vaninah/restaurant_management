@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DishRepository implements Repository<Dish> {
     private final Connection connection;
@@ -18,7 +19,8 @@ public class DishRepository implements Repository<Dish> {
         return new Dish(
                 rs.getString("id"),
                 rs.getString("name"),
-                rs.getInt("price")
+                rs.getInt("price"),
+                new ArrayList<>()
         );
     }
 
