@@ -90,8 +90,8 @@ public class IngredientRepository implements Repository<Ingredient> {
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString (1, toCreate.getId());
             prs.setString (2, toCreate.getName());
-            prs.setTimestamp(3, toCreate.getUpdatedDatetime());
-            prs.setInt (4, toCreate.getPrice());
+            prs.setTimestamp(3, Timestamp.valueOf(toCreate.getUpdatedDatetime()));
+            prs.setBigDecimal (4, toCreate.getPrice());
             prs.setString (5, toCreate.getUnit().toString());
             prs.executeUpdate();
             return this.findById(toCreate.getId());
@@ -107,15 +107,15 @@ public class IngredientRepository implements Repository<Ingredient> {
                 set "name" = ? ,
                     "updated_datetime" = ?,
                     "price" = ?,
-                    "unit" = ?"
+                    "unit" = ?
                 where "id" = ?
         """;
         try{
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString (1, toUpdate.getId());
             prs.setString (2, toUpdate.getName());
-            prs.setTimestamp(3, toUpdate.getUpdatedDatetime());
-            prs.setInt (4, toUpdate.getPrice());
+            prs.setTimestamp(3, Timestamp.valueOf(toUpdate.getUpdatedDatetime()));
+            prs.setBigDecimal(4, toUpdate.getPrice());
             prs.setString (5, toUpdate.getUnit().toString());
             prs.executeUpdate();
             return this.findById(toUpdate.getId());

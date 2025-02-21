@@ -19,29 +19,6 @@ public class Ingredient {
         this.unit = unit;
     }
 
-    @Override
-    public String toString() {
-        return "Ingredient{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", updatedDatetime=" + updatedDatetime +
-                ", price=" + price +
-                ", unit=" + unit +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Ingredient that = (Ingredient) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updatedDatetime, that.updatedDatetime) && Objects.equals(price, that.price) && unit == that.unit;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, updatedDatetime, price, unit);
-    }
-
     public String getId() {
         return id;
     }
@@ -66,7 +43,7 @@ public class Ingredient {
         this.updatedDatetime = updatedDatetime;
     }
 
-    public int getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -80,5 +57,28 @@ public class Ingredient {
 
     public void setUnit(Unit unit) {
         this.unit = unit;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updatedDatetime, that.updatedDatetime) && Objects.equals(price, that.price) && unit == that.unit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, updatedDatetime, price, unit);
+    }
+
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", updatedDatetime=" + updatedDatetime +
+                ", price=" + price +
+                ", unit=" + unit +
+                '}';
     }
 }
