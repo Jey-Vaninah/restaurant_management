@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DishRepository implements Repository<Dish> {
     private final Connection connection;
@@ -38,5 +39,30 @@ public class DishRepository implements Repository<Dish> {
         }catch (SQLException e){
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<Dish> findAll(Pagination pagination, Order order) {
+        return List.of();
+    }
+
+    @Override
+    public Dish deleteById(String id) {
+        return null;
+    }
+
+    @Override
+    public Dish create(Dish id) {
+        return null;
+    }
+
+    @Override
+    public Dish update(Dish id) {
+        return null;
+    }
+
+    @Override
+    public Dish crupdate(Dish id) {
+        return null;
     }
 }

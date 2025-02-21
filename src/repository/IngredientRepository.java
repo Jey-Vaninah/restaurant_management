@@ -3,10 +3,9 @@ package repository;
 import entity.Ingredient;
 import entity.Unit;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IngredientRepository implements Repository<Ingredient> {
     final private Connection connection;
@@ -15,7 +14,7 @@ public class IngredientRepository implements Repository<Ingredient> {
         this.connection = connection;
     }
 
-    private Ingredient mapResultSetToIngredient(ResultSet rs) throws SQLException {
+    private Ingredient resultSetToIngredient(ResultSet rs) throws SQLException {
         return new Ingredient(
             rs.getString("id"),
             rs.getString("name"),
@@ -34,12 +33,104 @@ public class IngredientRepository implements Repository<Ingredient> {
             st.setString(1, id);
             ResultSet rs = st.executeQuery();
             if(rs.next()) {
-                return mapResultSetToIngredient(rs);
+                return resultSetToIngredient(rs);
             }
             return null;
         }catch (SQLException e){
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<Ingredient> findAll(Pagination pagination, Order order) {
+        StringBuilder query = new StringBuilder("select * from \"ingredient\"");
+        query.append(" order by ").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
+        query.append(" limit ? offset ?");
+
+        List<Ingredient> ingredients = new ArrayList<>();
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
+            preparedStatement.setInt(1, pagination.getPageSize());
+            preparedStatement.setInt(2, (pagination.getPage() - 1) * pagination.getPageSize());
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                ingredients.add(resultSetToIngredient(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return ingredients;
+    }
+
+    @Override
+    public Ingredient deleteById(String id) {
+        String query = """
+            delete from "ingredient" where "id" = ?;
+        """;
+
+        try{
+            final Ingredient toDelete = this.findById((id));
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toDelete.getId());
+            prs.executeUpdate();
+            return toDelete;
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
+    }
+
+    @Override
+    public Ingredient create(Ingredient toCreate) {
+        String query = """
+            insert into "ingredient"("id", "name", "gender", "birth_date")
+            values (?, ?, ?, ?, ?);
+         """;
+        try{
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toCreate.getId());
+            prs.setString (2, toCreate.getName());
+            prs.setTimestamp(3, toCreate.getUpdatedDatetime());
+            prs.setInt (4, toCreate.getPrice());
+            prs.setString (5, toCreate.getUnit().toString());
+            prs.executeUpdate();
+            return this.findById(toCreate.getId());
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
+    }
+
+    @Override
+    public Ingredient update(Ingredient toUpdate) {
+        String query = """
+            update "ingredient"
+                set "name" = ? ,
+                    "updated_datetime" = ?,
+                    "price" = ?,
+                    "unit" = ?"
+                where "id" = ?
+        """;
+        try{
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toUpdate.getId());
+            prs.setString (2, toUpdate.getName());
+            prs.setTimestamp(3, toUpdate.getUpdatedDatetime());
+            prs.setInt (4, toUpdate.getPrice());
+            prs.setString (5, toUpdate.getUnit().toString());
+            prs.executeUpdate();
+            return this.findById(toUpdate.getId());
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
+    }
+
+    @Override
+    public Ingredient crupdate(Ingredient crupdateIngredient) {
+        final boolean isCreate = this.findById(crupdateIngredient.getId()) == null;
+        if(isCreate) {
+            return this.create(crupdateIngredient);
+        }
+        return this.update(crupdateIngredient);
     }
 }
 

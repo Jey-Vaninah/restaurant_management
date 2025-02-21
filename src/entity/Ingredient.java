@@ -66,7 +66,7 @@ public class Ingredient {
         this.updatedDatetime = updatedDatetime;
     }
 
-    public BigDecimal getPrice() {
+    public int getPrice() {
         return price;
     }
 
