@@ -2,7 +2,6 @@ package repository;
 
 import entity.Dish;
 import entity.Ingredient;
-import entity.Unit;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -32,7 +31,7 @@ public class DishRepository implements Repository<Dish> {
             dishId,
             rs.getString("name"),
             dishPrice,
-            this.ingredientRepository.findAll(null, null, datetime)
+            ingredients
         );
     }
 

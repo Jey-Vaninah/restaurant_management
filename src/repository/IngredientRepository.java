@@ -198,5 +198,73 @@ public class IngredientRepository implements Repository<Ingredient> {
             throw new RuntimeException(e);
         }
     }
+
+    public List<Ingredient> findByCriteria(List<Criteria> criteria, Order order, Pagination pagination) {
+        return this.findByCriteria(criteria, order, pagination, LocalDateTime.now());
+    }
+
+    public List<Ingredient> findByCriteria(List<Criteria> criteria, Order order, Pagination pagination, LocalDateTime datetime) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT i.id, i.name, i.unit, i.unit_price, i.update_datetime FROM ingredient i WHERE 1=1");
+        List<Object> parameters = new ArrayList<>();
+        Timestamp updateDatetimeFrom = null;
+        Timestamp updateDatetimeEnd = null;
+        BigDecimal priceFrom = null;
+        BigDecimal priceTo = null;
+
+        for (Criteria c : criteria) {
+            if ("name".equals(c.getColumn())) {
+                sql.append(" AND i.").append(c.getColumn()).append(" ilike ?");
+                parameters.add("%" + c.getValue().toString() + "%");
+            } else if("unit_price_from".equals(c.getColumn())) {
+                priceFrom = (BigDecimal) c.getValue();
+            } else if("unit_price_to".equals(c.getColumn())) {
+                priceTo = (BigDecimal) c.getValue();
+            } else if ("update_datetime _from".equals(c.getColumn())) {
+                updateDatetimeFrom = (Timestamp) c.getValue();
+            }else if("update_datetime _end".equals(c.getColumn())) {
+                updateDatetimeEnd = (Timestamp) c.getValue();
+            } else if ("unit".equals(c.getColumn())) {
+                sql.append(" AND i.").append(c.getColumn()).append(" = ?");
+                parameters.add(c.getValue());
+            }
+        }
+
+        if(updateDatetimeFrom != null && updateDatetimeEnd != null) {
+            sql.append(" and i.update_datetime between ? and ?");
+            parameters.add(updateDatetimeFrom);
+            parameters.add(updateDatetimeEnd);
+        }
+
+        if(priceFrom != null && priceTo != null) {
+            sql.append(" and i.unit_price between ? and ?");
+            parameters.add(priceFrom);
+            parameters.add(priceTo);
+        }
+
+        sql.append(" order by i.").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
+        sql.append(" limit ").append(pagination.getPageSize()).append(" offset ").append(
+                (pagination.getPage()  - 1) * pagination.getPageSize()
+        );
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            for (int i = 0; i < parameters.size(); i++) {
+                Object value = parameters.get(i);
+                if(value.getClass().isEnum()){
+                    statement.setObject(i  + 1, value, Types.OTHER);
+                    continue;
+                }
+                statement.setObject(i + 1, value);
+            }
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                ingredients.add(resultSetToIngredient(rs, datetime));
+            }
+        } catch (SQLException error) {
+            throw new RuntimeException(error.getMessage());
+        }
+        return ingredients;
+    }
 }
 
