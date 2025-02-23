@@ -5,6 +5,7 @@ import entity.Unit;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,26 +16,52 @@ public class IngredientRepository implements Repository<Ingredient> {
         this.connection = connection;
     }
 
-    private Ingredient resultSetToIngredient(ResultSet rs) throws SQLException {
+    private Ingredient resultSetToIngredient(ResultSet rs, LocalDateTime datetime) throws SQLException {
+        String id = rs.getString("id");
         return new Ingredient(
-            rs.getString("id"),
+            id,
             rs.getString("name"),
             rs.getTimestamp("updated_datetime").toLocalDateTime(),
-            rs.getBigDecimal("price"),
+            this.getIngredientPriceById(id, datetime),
             Unit.valueOf(rs.getString("unit"))
         );
     }
 
+    public List<Ingredient> findByDishId(String dishId, LocalDateTime datetime){
+        String query = """
+            select
+                i.id as id,
+                i.name as name,
+                i.update_datetime as update_datetime,
+                i.unit as unit,
+                i.unit_price as unit_price
+            from ingredient i
+            inner join dish_ingredient di on i.id = di.id_ingredient
+            where di.dish_ingredient = ?;
+        """;
 
-    @Override
-    public Ingredient findById(String id) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, dishId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                ingredients.add(resultSetToIngredient(rs, datetime));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return ingredients;
+    }
+
+    public Ingredient findById(String id, LocalDateTime datetime) {
         String query = "SELECT * FROM \"ingredient\" WHERE \"id\" = ?";
         try{
             PreparedStatement st = connection.prepareStatement(query);
             st.setString(1, id);
             ResultSet rs = st.executeQuery();
             if(rs.next()) {
-                return resultSetToIngredient(rs);
+                return resultSetToIngredient(rs, datetime);
             }
             return null;
         }catch (SQLException e){
@@ -43,25 +70,33 @@ public class IngredientRepository implements Repository<Ingredient> {
     }
 
     @Override
-    public List<Ingredient> findAll(Pagination pagination, Order order) {
+    public Ingredient findById(String id) {
+        return this.findById(id, LocalDateTime.now());
+    }
+
+    public List<Ingredient> findAll(Pagination pagination, Order order, LocalDateTime datetime) {
         StringBuilder query = new StringBuilder("select * from \"ingredient\"");
         query.append(" order by ").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
         query.append(" limit ? offset ?");
 
         List<Ingredient> ingredients = new ArrayList<>();
-
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
             preparedStatement.setInt(1, pagination.getPageSize());
             preparedStatement.setInt(2, (pagination.getPage() - 1) * pagination.getPageSize());
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                ingredients.add(resultSetToIngredient(rs));
+                ingredients.add(resultSetToIngredient(rs, datetime));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return ingredients;
+    }
+
+    @Override
+    public List<Ingredient> findAll(Pagination pagination, Order order) {
+        return this.findAll(pagination, order, LocalDateTime.now());
     }
 
     @Override
@@ -84,7 +119,7 @@ public class IngredientRepository implements Repository<Ingredient> {
     @Override
     public Ingredient create(Ingredient toCreate) {
         String query = """
-            insert into "ingredient"("id", "name", "gender", "birth_date")
+            insert into "ingredient"("id", "name", "update_datetime", "unit_price", "unit")
             values (?, ?, ?, ?, ?);
          """;
         try{
@@ -107,17 +142,17 @@ public class IngredientRepository implements Repository<Ingredient> {
             update "ingredient"
                 set "name" = ? ,
                     "updated_datetime" = ?,
-                    "price" = ?,
+                    "unit_price" = ?,
                     "unit" = ?
                 where "id" = ?
         """;
         try{
             PreparedStatement prs = connection.prepareStatement(query);
-            prs.setString (1, toUpdate.getId());
-            prs.setString (2, toUpdate.getName());
-            prs.setTimestamp(3, Timestamp.valueOf(toUpdate.getUpdatedDatetime()));
-            prs.setBigDecimal(4, toUpdate.getPrice());
-            prs.setString (5, toUpdate.getUnit().toString());
+            prs.setString (1, toUpdate.getName());
+            prs.setTimestamp(2, Timestamp.valueOf(toUpdate.getUpdatedDatetime()));
+            prs.setBigDecimal(3, toUpdate.getPrice());
+            prs.setString (4, toUpdate.getUnit().toString());
+            prs.setString (5, toUpdate.getId());
             prs.executeUpdate();
             return this.findById(toUpdate.getId());
         }catch (SQLException error){
@@ -134,36 +169,34 @@ public class IngredientRepository implements Repository<Ingredient> {
         return this.update(crupdateIngredient);
     }
 
-    public BigDecimal getLatestPriceOrDefault(String ingredientId) throws SQLException {
-        String sql = """
-        SELECT iph.unit_price 
-        FROM ingredient_price_history iph
-        WHERE iph.id_ingredient = ? 
-        ORDER BY iph.price_datetime DESC 
-        LIMIT 1;
-    """;
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, ingredientId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getBigDecimal("unit_price");
-            }
-        }
-
-        String fallbackSql = "SELECT unit_price FROM ingredient WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(fallbackSql)) {
-            stmt.setString(1, ingredientId);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getBigDecimal("unit_price");
-            }
-        }
-
-        return BigDecimal.ZERO;
+    public BigDecimal getIngredientPriceById(String ingredientId){
+        return getIngredientPriceById(ingredientId, LocalDateTime.now());
     }
 
+    public BigDecimal getIngredientPriceById(String ingredientId, LocalDateTime datetime){
+        String sql = """
+            SELECT iph.unit_price
+            FROM ingredient_price_history iph
+            WHERE
+                iph.id_ingredient = ?
+                AND iph.price_datetime <= ?
+            ORDER BY iph.price_datetime DESC
+            LIMIT 1;
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, ingredientId);
+            statement.setTimestamp(2, Timestamp.valueOf(datetime));
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal("unit_price");
+            }
+
+            return BigDecimal.ZERO;
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
 }
 
