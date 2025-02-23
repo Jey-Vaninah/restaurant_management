@@ -3,6 +3,7 @@ package repository;
 import entity.Ingredient;
 import entity.Unit;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,5 +133,37 @@ public class IngredientRepository implements Repository<Ingredient> {
         }
         return this.update(crupdateIngredient);
     }
+
+    public BigDecimal getLatestPriceOrDefault(String ingredientId) throws SQLException {
+        String sql = """
+        SELECT iph.unit_price 
+        FROM ingredient_price_history iph
+        WHERE iph.id_ingredient = ? 
+        ORDER BY iph.price_datetime DESC 
+        LIMIT 1;
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, ingredientId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal("unit_price");
+            }
+        }
+
+        String fallbackSql = "SELECT unit_price FROM ingredient WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(fallbackSql)) {
+            stmt.setString(1, ingredientId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal("unit_price");
+            }
+        }
+
+        return BigDecimal.ZERO;
+    }
+
 }
 

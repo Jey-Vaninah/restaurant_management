@@ -1,20 +1,16 @@
 package test;
 
 import entity.Ingredient;
-import entity.Unit;
 import org.junit.jupiter.api.Test;
 import repository.IngredientRepository;
 import repository.Order;
 import repository.Pagination;
 import repository.conf.DatabaseConnection;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static repository.Order.OrderValue.ASC;
 import static test.utils.IngredientTestDataUtils.*;
 
