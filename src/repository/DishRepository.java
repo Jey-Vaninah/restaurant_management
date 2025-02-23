@@ -1,7 +1,9 @@
 package repository;
 
 import entity.Dish;
+import entity.DishIngredient;
 import entity.Ingredient;
+import entity.Unit;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,12 +16,21 @@ public class DishRepository implements Repository<Dish> {
         this.connection = connection;
     }
 
-    private Dish resultSetToDish(ResultSet rs) throws SQLException {
+//    private Dish resultSetToDish(ResultSet rs) throws SQLException {
+//        return new Dish(
+//            rs.getString("id"),
+//            rs.getString("name"),
+//            rs.getBigDecimal("price"),
+//            new ArrayList<>() //TODO: get list of ingredient
+//        );
+//    }
+
+    private Dish resultSetToDish(ResultSet rs, List<Ingredient> ingredients) throws SQLException {
         return new Dish(
-            rs.getString("id"),
-            rs.getString("name"),
-            rs.getBigDecimal("price"),
-            new ArrayList<>() //TODO: get list of ingredient
+                rs.getString("id"),
+                rs.getString("name"),
+                rs.getBigDecimal("price"),
+                ingredients
         );
     }
 
@@ -128,4 +139,45 @@ public class DishRepository implements Repository<Dish> {
         }
         return this.update(crupdateDish);
     }
-}
+
+
+    public Dish getDishWithIngredients(String id) throws SQLException {
+        Dish dish = null;
+        List<Ingredient> ingredients = new ArrayList<>();
+        String sqlDish = "SELECT * FROM dish WHERE id = ?";
+        String sqlIngredients = "SELECT i.*, di.quantity, di.unit FROM dish_ingredient di " +
+                "JOIN ingredient i ON di.ingredient_id = i.id WHERE di.dish_id = ?";
+
+        if (dish != null) {
+            try (PreparedStatement stmtIngredients = connection.prepareStatement(sqlIngredients)) {
+                stmtIngredients.setString(1, id);
+                try (ResultSet rsIngredients = stmtIngredients.executeQuery()) {
+                    while (rsIngredients.next()) {
+                        Ingredient ingredient = new Ingredient(
+                                rsIngredients.getString("id"),
+                                rsIngredients.getString("name"),
+                                rsIngredients.getTimestamp("last_modified").toLocalDateTime(),
+                                rsIngredients.getBigDecimal("unit_price"),
+                                Unit.valueOf(rsIngredients.getString("unit"))
+                        );
+                        ingredients.add(ingredient);
+                    }
+                }
+            }
+        }
+
+        try (PreparedStatement stmtDish = connection.prepareStatement(sqlDish)) {
+            stmtDish.setString(1, id);
+            try (ResultSet rsDish = stmtDish.executeQuery()) {
+                if (rsDish.next()) {
+                    dish = resultSetToDish(rsDish, ingredients);
+                }
+            }
+        }
+
+        return dish;
+        }
+
+    }
+
+
