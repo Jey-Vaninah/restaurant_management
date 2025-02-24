@@ -20,7 +20,7 @@ public class DishRepository implements Repository<Dish> {
 
     private Dish resultSetToDish(ResultSet rs, LocalDateTime datetime) throws SQLException {
         String dishId = rs.getString("id");
-        List<Ingredient> ingredients = this.ingredientRepository.findByDishId(dishId, datetime);
+        List<Ingredient> ingredients = this.ingredientRepository.findWithSumPriceByDishId(dishId, datetime);
         BigDecimal dishPrice = ingredients
             .stream()
             .map(Ingredient::getPrice)

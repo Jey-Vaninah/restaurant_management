@@ -27,17 +27,18 @@ public class IngredientRepository implements Repository<Ingredient> {
         );
     }
 
-    public List<Ingredient> findByDishId(String dishId, LocalDateTime datetime){
+    public List<Ingredient> findWithSumPriceByDishId(String dishId, LocalDateTime datetime){
         String query = """
             select
+                sum(di.required_quantity) as unit_price,
                 i.id as id,
                 i.name as name,
                 i.update_datetime as update_datetime,
-                i.unit as unit,
-                i.unit_price as unit_price
+                i.unit as unit            
             from ingredient i
             inner join dish_ingredient di on i.id = di.id_ingredient
-            where di.dish_ingredient = ?;
+            where di.id_ingredient = ?
+            group by id, name, update_datetime, unit;
         """;
 
         List<Ingredient> ingredients = new ArrayList<>();
@@ -197,10 +198,6 @@ public class IngredientRepository implements Repository<Ingredient> {
         }catch(SQLException e){
             throw new RuntimeException(e);
         }
-    }
-
-    public List<Ingredient> findByCriteria(List<Criteria> criteria, Order order, Pagination pagination) {
-        return this.findByCriteria(criteria, order, pagination, LocalDateTime.now());
     }
 
     public List<Ingredient> findByCriteria(List<Criteria> criteria, Order order, Pagination pagination, LocalDateTime datetime) {

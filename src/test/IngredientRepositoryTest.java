@@ -11,7 +11,7 @@ import repository.conf.DatabaseConnection;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,6 +31,17 @@ public class IngredientRepositoryTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    void find_by_id_on_23February2023_ok(){
+        Ingredient expected = saucisse();
+        LocalDateTime datetime = LocalDateTime.parse("2023-02-23");
+
+        Ingredient actual = subject.findById(expected.getId(), datetime);
+
+        assertEquals(expected, actual);
+    }
+
     @Test
     void read_all_ingredient_ok() {
         List<Ingredient> expecteds = List.of(
@@ -44,7 +55,8 @@ public class IngredientRepositoryTest {
 
         List<Ingredient> actuals = subject.findAll(pagination, order);
 
-        assertEquals(expecteds, actuals);    }
+        assertEquals(expecteds, actuals);
+    }
 
     @Test
     void read_ingredient_by_criteria_ok(){
@@ -62,7 +74,7 @@ public class IngredientRepositoryTest {
                 new Criteria("unit_price_to", new BigDecimal("20000"))
         );
 
-        List<Ingredient> actuals = subject.findByCriteria(criteria, order, pagination);
+        List<Ingredient> actuals = subject.findByCriteria(criteria, order, pagination, LocalDateTime.now());
 
         assertEquals(expecteds, actuals);
     }
