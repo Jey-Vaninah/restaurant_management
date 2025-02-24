@@ -23,7 +23,7 @@ public class DishRepository implements Repository<Dish> {
         List<Ingredient> ingredients = this.ingredientRepository.findWithSumPriceByDishId(dishId, datetime);
         BigDecimal dishPrice = ingredients
             .stream()
-            .map(Ingredient::getPrice)
+            .map(Ingredient::getUnitPrice)
             .reduce(BigDecimal::add)
             .orElse(rs.getBigDecimal("price"));
 

@@ -8,14 +8,14 @@ public class Ingredient {
     private String id;
     private String name;
     private LocalDateTime updatedDatetime;
-    private BigDecimal price;
+    private BigDecimal unitPrice;
     private Unit unit;
 
-    public Ingredient(String id, String name, LocalDateTime updatedDatetime, BigDecimal price, Unit unit) {
+    public Ingredient(String id, String name, LocalDateTime updatedDatetime, BigDecimal unitPrice, Unit unit) {
         this.id = id;
         this.name = name;
         this.updatedDatetime = updatedDatetime;
-        this.price = price;
+        this.unitPrice = unitPrice;
         this.unit = unit;
     }
 
@@ -43,12 +43,12 @@ public class Ingredient {
         this.updatedDatetime = updatedDatetime;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setUnitPrice(BigDecimal price) {
+        this.unitPrice = unitPrice;
     }
 
     public Unit getUnit() {
@@ -68,7 +68,7 @@ public class Ingredient {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, updatedDatetime, price, unit);
+        return Objects.hash(id, name, updatedDatetime, unitPrice, unit);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class Ingredient {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", updatedDatetime=" + updatedDatetime +
-                ", price=" + price +
+                ", unitPrice=" + unitPrice +
                 ", unit=" + unit +
                 '}';
     }
