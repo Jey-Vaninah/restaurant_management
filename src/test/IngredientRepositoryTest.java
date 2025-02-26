@@ -33,9 +33,9 @@ public class IngredientRepositoryTest {
     }
 
     @Test
-    void find_by_id_on_23February2023_ok(){
+    void find_by_id_on_25Janvier2025_ok(){
         Ingredient expected = saucisse();
-        LocalDateTime datetime = LocalDateTime.parse("2023-02-23");
+        LocalDateTime datetime = LocalDateTime.parse("2025-01-01");
 
         Ingredient actual = subject.findById(expected.getId(), datetime);
 
@@ -64,9 +64,9 @@ public class IngredientRepositoryTest {
                 saucisse()
         );
         Order order = new Order("name", ASC);
-        Pagination pagination = new Pagination(1, 10);
+        Pagination pagination = new Pagination(2, 1);
         List<Criteria> criteria = List.of(
-                new Criteria("name", "saucisse"),
+                new Criteria("name", "u"),
                 new Criteria("unit", "G"),
                 new Criteria("update_datetime_from", Timestamp.valueOf("2007-06-01 00:00:00")),
                 new Criteria("update_datetime_to", Timestamp.valueOf("2007-06-20 23:59:59")),

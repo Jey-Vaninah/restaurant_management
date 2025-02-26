@@ -31,9 +31,9 @@ public class DishReposiroryTest {
     }
 
     @Test
-    void find_by_id_on_23February2023_ok(){
+    void find_by_id_on_25Janvier2025_ok(){
         Dish expected = hotDog();
-        LocalDateTime datetime = LocalDateTime.parse("2023-02-23");
+        LocalDateTime datetime = LocalDateTime.parse("2025-01-01");
 
         Dish actual = subject.findById(expected.getId(), datetime);
 
@@ -56,7 +56,7 @@ public class DishReposiroryTest {
     void find_price_ingredient_dish_ok() {
         Dish expected = hotDog();
         BigDecimal expectedPrice = new BigDecimal(5500);
-        LocalDateTime datetime = LocalDateTime.parse("2023-02-23");
+        LocalDateTime datetime = LocalDateTime.parse("2025-01-01");
 
         Dish actual = subject.findById(expected.getId(), datetime);
 

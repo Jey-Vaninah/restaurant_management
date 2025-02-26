@@ -5,7 +5,6 @@ import entity.Ingredient;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,31 +17,44 @@ public class DishRepository implements Repository<Dish> {
         this.ingredientRepository = new IngredientRepository(connection);
     }
 
-    private Dish resultSetToDish(ResultSet rs, LocalDateTime datetime) throws SQLException {
-        String dishId = rs.getString("id");
-        List<Ingredient> ingredients = this.ingredientRepository.findWithSumPriceByDishId(dishId, datetime);
-        BigDecimal dishPrice = ingredients
-            .stream()
-            .map(Ingredient::getUnitPrice)
-            .reduce(BigDecimal::add)
-            .orElse(rs.getBigDecimal("price"));
+    public Dish resultSetToDish(ResultSet rs) throws SQLException {
+        String id = rs.getString("id");
+        String name = rs.getString("name");
+        BigDecimal unitPrice = rs.getBigDecimal("unit_price");
 
-        return new Dish(
-            dishId,
-            rs.getString("name"),
-            dishPrice,
-            ingredients
-        );
+        List<Ingredient> ingredients = getIngredientsByDishId(id);
+
+        return new Dish(id, name, unitPrice, ingredients, connection);
     }
 
-    public Dish findById(String id, LocalDateTime datetime) {
+    public List<Ingredient> getIngredientsByDishId(String dishId) throws SQLException {
+        List<Ingredient> ingredients = new ArrayList<>();
+        String query = "SELECT * FROM ingredient WHERE dish_id = ?";
+
+        try (PreparedStatement st = connection.prepareStatement(query)) {
+            st.setString(1, dishId);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                String ingredientId = rs.getString("id");
+                Ingredient ingredient = ingredientRepository.findById(ingredientId);
+                ingredients.add(ingredient);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ingredients;
+    }
+
+    public Dish findById(String id) {
         String query = "select * from \"dish\" where \"id\" = ?";
         try {
             PreparedStatement st = connection.prepareStatement(query);
             st.setString(1, id);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
-                return resultSetToDish(rs, datetime);
+                return resultSetToDish(rs);
             }
             return null;
         } catch (SQLException e) {
@@ -51,11 +63,7 @@ public class DishRepository implements Repository<Dish> {
     }
 
     @Override
-    public Dish findById(String id) {
-        return this.findById(id, LocalDateTime.now());
-    }
-
-    public List<Dish> findAll(Pagination pagination, Order order, LocalDateTime datetime) {
+    public List<Dish> findAll(Pagination pagination, Order order) {
         StringBuilder query = new StringBuilder("select * from \"dish\"");
         query.append(" order by ").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
         query.append(" limit ? offset ?");
@@ -68,17 +76,12 @@ public class DishRepository implements Repository<Dish> {
             preparedStatement.setInt(2, (pagination.getPage() - 1) * pagination.getPageSize());
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                dishs.add(resultSetToDish(rs, datetime));
+                dishs.add(resultSetToDish(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return dishs;
-    }
-
-    @Override
-    public List<Dish> findAll(Pagination pagination, Order order) {
-        return this.findAll(pagination, order, LocalDateTime.now());
     }
 
     @Override

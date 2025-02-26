@@ -1,6 +1,8 @@
 package entity;
 
 import java.math.BigDecimal;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,12 +11,15 @@ public class Dish {
     private String name;
     private BigDecimal unitPrice;
     private List<Ingredient> ingredients;
+    private Connection connection;
 
-    public Dish(String id, String name, BigDecimal unitPrice, List<Ingredient> ingredients) {
+
+    public Dish(String id, String name, BigDecimal unitPrice, List<Ingredient> ingredients, Connection connection) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
         this.ingredients = ingredients;
+        this.connection = connection;
     }
 
     public String getId() {
@@ -70,4 +75,40 @@ public class Dish {
                 ", ingredients=" + ingredients +
                 '}';
     }
+
+    public BigDecimal getIngredientCost(String ingredientId, LocalDateTime datetime) {
+        String sql = """
+            SELECT iph.unit_price
+            FROM ingredient_price_history iph
+            WHERE iph.id_ingredient = ?
+                AND iph.price_datetime <= ?
+            ORDER BY iph.price_datetime DESC
+            LIMIT 1;
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, ingredientId);
+            statement.setTimestamp(2, Timestamp.valueOf(datetime));
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getBigDecimal("unit_price");
+            }
+            return BigDecimal.ZERO;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public BigDecimal getGrossMargin(LocalDateTime datetime) {
+        BigDecimal totalIngredientCost = BigDecimal.ZERO;
+
+        for (Ingredient ingredient : ingredients) {
+            BigDecimal ingredientCost = getIngredientCost(ingredient.getId(), datetime);
+            totalIngredientCost = totalIngredientCost.add(ingredientCost);
+        }
+
+        return unitPrice.subtract(totalIngredientCost);
+    }
+
 }
