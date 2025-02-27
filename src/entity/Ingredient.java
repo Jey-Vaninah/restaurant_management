@@ -8,15 +8,15 @@ import java.util.Objects;
 public class Ingredient {
     private String id;
     private String name;
-    private LocalDateTime updatedDatetime;
+    private LocalDateTime updateDatetime;
     private BigDecimal unitPrice;
     private Unit unit;
     private List<PriceHistory> priceHistory;
 
-    public Ingredient(String id, String name, LocalDateTime updatedDatetime, BigDecimal unitPrice, Unit unit, List<PriceHistory> priceHistory) {
+    public Ingredient(String id, String name, LocalDateTime updateDatetime, BigDecimal unitPrice, Unit unit, List<PriceHistory> priceHistory) {
         this.id = id;
         this.name = name;
-        this.updatedDatetime = updatedDatetime;
+        this.updateDatetime = updateDatetime;
         this.unitPrice = unitPrice;
         this.unit = unit;
         this.priceHistory = priceHistory;
@@ -38,12 +38,12 @@ public class Ingredient {
         this.name = name;
     }
 
-    public LocalDateTime getUpdatedDatetime() {
-        return updatedDatetime;
+    public LocalDateTime getUpdateDatetime() {
+        return updateDatetime;
     }
 
-    public void setUpdatedDatetime(LocalDateTime updatedDatetime) {
-        this.updatedDatetime = updatedDatetime;
+    public void setUpdateDatetime(LocalDateTime updateDatetime) {
+        this.updateDatetime = updateDatetime;
     }
 
     public BigDecimal getUnitPrice() {
@@ -75,12 +75,12 @@ public class Ingredient {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updatedDatetime, that.updatedDatetime) && Objects.equals(unitPrice, that.unitPrice) && unit == that.unit && Objects.equals(priceHistory, that.priceHistory);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updateDatetime, that.updateDatetime) && Objects.equals(unitPrice, that.unitPrice) && unit == that.unit && Objects.equals(priceHistory, that.priceHistory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, updatedDatetime, unitPrice, unit, priceHistory);
+        return Objects.hash(id, name, updateDatetime, unitPrice, unit, priceHistory);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class Ingredient {
         return "Ingredient{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", updatedDatetime=" + updatedDatetime +
+                ", updateDatetime=" + updateDatetime +
                 ", unitPrice=" + unitPrice +
                 ", unit=" + unit +
                 ", priceHistory=" + priceHistory +

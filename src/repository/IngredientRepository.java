@@ -20,14 +20,14 @@ public class IngredientRepository implements Repository<Ingredient> {
     private Ingredient resultSetToIngredient(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         String name = rs.getString("name");
-        LocalDateTime updatedDateTime = rs.getTimestamp("updated_datetime").toLocalDateTime();
+        LocalDateTime updateDateTime = rs.getTimestamp("update_datetime").toLocalDateTime();
         Unit unit = Unit.valueOf(rs.getString("unit"));
         List<PriceHistory> priceHistory = this.getPriceHistoryByIngredientId(id);
         BigDecimal unitPrice = rs.getBigDecimal("unit_price");
         return new Ingredient(
                 id,
                 name,
-                updatedDateTime,
+                updateDateTime,
                 unitPrice,
                 unit,
                 priceHistory
@@ -36,7 +36,7 @@ public class IngredientRepository implements Repository<Ingredient> {
 
     public List<PriceHistory> getPriceHistoryByIngredientId(String ingredientId) {
         List<PriceHistory> priceHistories = new ArrayList<>();
-        String query = "SELECT * FROM price_history WHERE id_ingredient = ? ORDER BY price_datetime DESC";
+        String query = "SELECT * FROM ingredient_price_history WHERE id_ingredient = ? ORDER BY price_datetime DESC";
 
         try (PreparedStatement st = connection.prepareStatement(query)) {
             st.setString(1, ingredientId);
@@ -47,8 +47,7 @@ public class IngredientRepository implements Repository<Ingredient> {
                         rs.getString("id"),
                         rs.getString("id_ingredient"),
                         rs.getTimestamp("price_datetime").toLocalDateTime(),
-                        rs.getBigDecimal("unit_price"),
-                        rs.getBigDecimal("total_price")
+                        rs.getBigDecimal("unit_price")
                 ));
             }
         } catch (SQLException e) {
@@ -57,6 +56,7 @@ public class IngredientRepository implements Repository<Ingredient> {
 
         return priceHistories;
     }
+
 
     public Ingredient findById(String id) {
         String query = "SELECT * FROM \"ingredient\" WHERE \"id\" = ?";
@@ -121,7 +121,7 @@ public class IngredientRepository implements Repository<Ingredient> {
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString (1, toCreate.getId());
             prs.setString (2, toCreate.getName());
-            prs.setTimestamp(3, Timestamp.valueOf(toCreate.getUpdatedDatetime()));
+            prs.setTimestamp(3, Timestamp.valueOf(toCreate.getUpdateDatetime()));
             prs.setBigDecimal (4, toCreate.getUnitPrice());
             prs.setString (5, toCreate.getUnit().toString());
             prs.executeUpdate();
@@ -144,7 +144,7 @@ public class IngredientRepository implements Repository<Ingredient> {
         try{
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString (1, toUpdate.getName());
-            prs.setTimestamp(2, Timestamp.valueOf(toUpdate.getUpdatedDatetime()));
+            prs.setTimestamp(2, Timestamp.valueOf(toUpdate.getUpdateDatetime()));
             prs.setBigDecimal(3, toUpdate.getUnitPrice());
             prs.setString (4, toUpdate.getUnit().toString());
             prs.setString (5, toUpdate.getId());

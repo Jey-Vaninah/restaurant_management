@@ -17,3 +17,6 @@ public class Criteria {
         this.value = value;
     }
 }
+
+//operateur > < =
+//operateur logique and na or

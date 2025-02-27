@@ -1,6 +1,7 @@
 package test.utils;
 
 import entity.Dish;
+import entity.Ingredient;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -14,8 +15,8 @@ public class DishTestDataUtils {
         return new Dish(
                 "D001",
                 "Hot Dog",
-                new BigDecimal("10000"),
-                List.of(saucisse(), pain(), huile(), oeuf()),
+                new BigDecimal("15000.00"),
+                List.of(huile(),saucisse(), pain(), oeuf()),
                 connection
         );
     }

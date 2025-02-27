@@ -20,15 +20,14 @@ public class IngredientTestDataUtils {
                 "P001",
                 "I001",
                 LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
-                new BigDecimal("20"),
-                new BigDecimal("40")
+                new BigDecimal("20.00")
         ));
 
         return new Ingredient(
                 "I001",
                 "Saucisse",
-                null,
-                new BigDecimal("20"),
+                LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
+                new BigDecimal("20.00"),
                 G,
                 priceHistory
         );
@@ -40,15 +39,14 @@ public class IngredientTestDataUtils {
                 "P002",
                 "I002",
                 LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
-                new BigDecimal("10000"),
-                new BigDecimal("20000")
+                new BigDecimal("10000.00")
         ));
 
         return new Ingredient(
                 "I002",
                 "Huile",
-                null,
-                new BigDecimal("10000"),
+                LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
+                new BigDecimal("10000.00"),
                 L,
                 priceHistory
         );
@@ -60,15 +58,14 @@ public class IngredientTestDataUtils {
                 "P003",
                 "I003",
                 LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
-                new BigDecimal("1000"),
-                new BigDecimal("1000")
+                new BigDecimal("1000.00")
         ));
 
         return new Ingredient(
                 "I003",
                 "Oeuf",
-                null,
-                new BigDecimal("1000"),
+                LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
+                new BigDecimal("1000.00"),
                 U,
                 priceHistory
         );
@@ -80,15 +77,14 @@ public class IngredientTestDataUtils {
                 "P004",
                 "I004",
                 LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
-                new BigDecimal("1000"),
-                new BigDecimal("1000")
+                new BigDecimal("1000.00")
         ));
 
         return new Ingredient(
                 "I004",
                 "Pain",
-                null,
-                new BigDecimal("10000"),
+                LocalDateTime.of(2025, 1, 1, 0, 0, 0, 0),
+                new BigDecimal("1000.00"),
                 U,
                 priceHistory
         );
