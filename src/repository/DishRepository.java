@@ -2,15 +2,9 @@ package repository;
 
 import entity.Dish;
 import entity.Ingredient;
-import entity.PriceHistory;
-import entity.Unit;
-
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DishRepository implements Repository<Dish> {
     private final Connection connection;
@@ -23,80 +17,16 @@ public class DishRepository implements Repository<Dish> {
 
     public Dish resultSetToDish(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
-        String name = rs.getString("name");
-        BigDecimal unitPrice = rs.getBigDecimal("unit_price");
-
-        List<Ingredient> ingredients = getIngredientsByDishId(id);
-
-        return new Dish(id, name, unitPrice, ingredients, connection);
+        List<Ingredient> ingredients = this.ingredientRepository.findByDishId(id);
+        return new Dish(
+            id,
+            rs.getString("name"),
+            rs.getBigDecimal("unit_price"),
+            ingredients
+        );
     }
 
-    public List<Ingredient> getIngredientsByDishId(String dishId) throws SQLException {
-        List<Ingredient> ingredients = new ArrayList<>();
-        String query = """
-    SELECT 
-        i.id, 
-        i.name, 
-        i.update_datetime, 
-        i.unit_price, 
-        i.unit, 
-        ph.id AS ph_id, 
-        ph.price_datetime, 
-        ph.unit_price AS price_value,
-        ph.id_ingredient  -- Assure-toi que cette colonne est bien récupérée
-    FROM dish_ingredient di
-    JOIN ingredient i ON di.id_ingredient = i.id
-    LEFT JOIN ingredient_price_history ph ON i.id = ph.id_ingredient
-    WHERE di.id_dish = ?
-    """;
-
-        try (PreparedStatement st = connection.prepareStatement(query)) {
-            st.setString(1, dishId);
-            ResultSet rs = st.executeQuery();
-
-            Map<String, Ingredient> ingredientMap = new HashMap<>();
-
-            while (rs.next()) {
-                String ingredientId = rs.getString("id");
-                Ingredient ingredient = ingredientMap.get(ingredientId);
-
-                if (ingredient == null) {
-                    // Créer un nouvel ingrédient si c'est la première fois qu'on le rencontre
-                    ingredient = new Ingredient(
-                            ingredientId,
-                            rs.getString("name"),
-                            rs.getTimestamp("update_datetime").toLocalDateTime(),
-                            rs.getBigDecimal("unit_price"),
-                            Unit.valueOf(rs.getString("unit")),
-                            new ArrayList<>() // Historique des prix vide au départ
-                    );
-                    ingredientMap.put(ingredientId, ingredient);
-                }
-
-                // Ajouter un PriceHistory pour cet ingrédient si disponible
-                String phId = rs.getString("ph_id");
-                String phIdIngredient = rs.getString("id_ingredient"); // Récupérer id_ingredient
-                if (phId != null) {
-                    PriceHistory priceHistory = new PriceHistory(
-                            phId,
-                            rs.getString("id_ingredient"),
-                            rs.getTimestamp("price_datetime").toLocalDateTime(),
-                            rs.getBigDecimal("price_value")
-                    );
-                    ingredient.getPriceHistory().add(priceHistory);
-                }
-            }
-
-            // Convertir les valeurs de la map en liste
-            ingredients.addAll(ingredientMap.values());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return ingredients;
-    }
-
-
+    @Override
     public Dish findById(String id) {
         String query = "select * from \"dish\" where \"id\" = ?";
         try {
@@ -115,12 +45,10 @@ public class DishRepository implements Repository<Dish> {
 
     @Override
     public List<Dish> findAll(Pagination pagination, Order order) {
-        List<Ingredient> ingredients = new ArrayList<>() ;
+        List<Dish> dishes = new ArrayList<>();
         StringBuilder query = new StringBuilder("select * from \"dish\"");
         query.append(" order by ").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
         query.append(" limit ? offset ?");
-
-        List<Dish> dishs = new ArrayList<>();
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
@@ -128,12 +56,12 @@ public class DishRepository implements Repository<Dish> {
             preparedStatement.setInt(2, (pagination.getPage() - 1) * pagination.getPageSize());
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                dishs.add(resultSetToDish(rs));
+                dishes.add(resultSetToDish(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return dishs;
+        return dishes;
     }
 
     @Override

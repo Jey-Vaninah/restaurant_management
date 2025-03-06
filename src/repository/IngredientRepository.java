@@ -6,60 +6,57 @@ import entity.Unit;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientRepository implements Repository<Ingredient> {
     final private Connection connection;
+    final private PriceHistoryRepository priceHistoryRepository;
 
     public IngredientRepository(Connection connection) {
         this.connection = connection;
+        this.priceHistoryRepository = new PriceHistoryRepository(this.connection);
     }
 
     private Ingredient resultSetToIngredient(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
-        String name = rs.getString("name");
-        LocalDateTime updateDateTime = rs.getTimestamp("update_datetime").toLocalDateTime();
-        Unit unit = Unit.valueOf(rs.getString("unit"));
-        List<PriceHistory> priceHistory = this.getPriceHistoryByIngredientId(id);
-        BigDecimal unitPrice = rs.getBigDecimal("unit_price");
+        List<PriceHistory> priceHistories = this.priceHistoryRepository.findByIngredientId(id);
+
         return new Ingredient(
-                id,
-                name,
-                updateDateTime,
-                unitPrice,
-                unit,
-                priceHistory
+            id,
+            rs.getString("name"),
+            rs.getTimestamp("update_datetime").toLocalDateTime(),
+            rs.getBigDecimal("unit_price"),
+            Unit.valueOf(rs.getString("unit")),
+            priceHistories
         );
     }
 
-    public List<PriceHistory> getPriceHistoryByIngredientId(String ingredientId) {
-        List<PriceHistory> priceHistories = new ArrayList<>();
-        String query = "SELECT * FROM ingredient_price_history WHERE id_ingredient = ? ORDER BY price_datetime DESC";
-
-        try (PreparedStatement st = connection.prepareStatement(query)) {
-            st.setString(1, ingredientId);
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                priceHistories.add(new PriceHistory(
-                        rs.getString("id"),
-                        rs.getString("id_ingredient"),
-                        rs.getTimestamp("price_datetime").toLocalDateTime(),
-                        rs.getBigDecimal("unit_price")
-                ));
+    public List<Ingredient> findByDishId(String dishId){
+        List<Ingredient> ingredients = new ArrayList<>();
+        String query = """
+            select "ingredient".*
+                from "dish_ingredient"
+                inner join "ingredient"
+                    on "ingredient"."id" = "dish_ingredient"."id_ingredient"
+                where "dish_ingredient"."id_dish" = ?
+                order by "ingredient"."name" asc;
+        """;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, dishId);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                ingredients.add(resultSetToIngredient(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        return priceHistories;
+        return ingredients;
     }
 
-
     public Ingredient findById(String id) {
-        String query = "SELECT * FROM \"ingredient\" WHERE \"id\" = ?";
+        String query = "select * from \"ingredient\" where \"id\" = ?";
         try{
             PreparedStatement st = connection.prepareStatement(query);
             st.setString(1, id);
@@ -136,7 +133,7 @@ public class IngredientRepository implements Repository<Ingredient> {
         String query = """
             update "ingredient"
                 set "name" = ? ,
-                    "updated_datetime" = ?,
+                    "update_datetime" = ?,
                     "unit_price" = ?,
                     "unit" = ?
                 where "id" = ?
@@ -164,9 +161,9 @@ public class IngredientRepository implements Repository<Ingredient> {
         return this.update(crupdateIngredient);
     }
 
-    public List<Ingredient> findByCriteria(List<Criteria> criteria, Order order, Pagination pagination) {
+    public List<Ingredient> findByCriteria(List<Criteria> criteria, Pagination pagination, Order order) {
         List<Ingredient> ingredients = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT i.id, i.name, i.unit, i.unit_price, i.update_datetime FROM ingredient i WHERE 1=1");
+        StringBuilder query = new StringBuilder("SELECT i.id, i.name, i.unit, i.unit_price, i.update_datetime FROM ingredient i WHERE 1=1");
         List<Object> parameters = new ArrayList<>();
         Timestamp updateDatetimeFrom = null;
         Timestamp updateDatetimeEnd = null;
@@ -175,41 +172,41 @@ public class IngredientRepository implements Repository<Ingredient> {
 
         for (Criteria c : criteria) {
             if ("name".equals(c.getColumn())) {
-                sql.append(" AND i.").append(c.getColumn()).append(" ilike ?");
+                query.append(" and i.").append(c.getColumn()).append(" ilike ?");
                 parameters.add("%" + c.getValue().toString() + "%");
             } else if("unit_price_from".equals(c.getColumn())) {
                 priceFrom = (BigDecimal) c.getValue();
             } else if("unit_price_to".equals(c.getColumn())) {
                 priceTo = (BigDecimal) c.getValue();
-            } else if ("update_datetime _from".equals(c.getColumn())) {
+            } else if ("update_datetime_from".equals(c.getColumn())) {
                 updateDatetimeFrom = (Timestamp) c.getValue();
-            }else if("update_datetime _end".equals(c.getColumn())) {
+            }else if("update_datetime_end".equals(c.getColumn())) {
                 updateDatetimeEnd = (Timestamp) c.getValue();
             } else if ("unit".equals(c.getColumn())) {
-                sql.append(" AND i.").append(c.getColumn()).append(" = ?");
+                query.append(" and i.").append(c.getColumn()).append(" = ?");
                 parameters.add(c.getValue());
             }
         }
 
         if(updateDatetimeFrom != null && updateDatetimeEnd != null) {
-            sql.append(" and i.update_datetime between ? and ?");
+            query.append(" and i.update_datetime between ? and ?");
             parameters.add(updateDatetimeFrom);
             parameters.add(updateDatetimeEnd);
         }
 
         if(priceFrom != null && priceTo != null) {
-            sql.append(" and i.unit_price between ? and ?");
+            query.append(" and i.unit_price between ? and ?");
             parameters.add(priceFrom);
             parameters.add(priceTo);
         }
 
-        sql.append(" order by i.").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
-        sql.append(" limit ").append(pagination.getPageSize()).append(" offset ").append(
-                (pagination.getPage()  - 1) * pagination.getPageSize()
+        query.append(" order by i.").append(order.getOrderBy()).append(" ").append(order.getOrderValue());
+        query.append(" limit ").append(pagination.getPageSize()).append(" offset ").append(
+            (pagination.getPage()  - 1) * pagination.getPageSize()
         );
 
         try {
-            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            PreparedStatement statement = connection.prepareStatement(query.toString());
             for (int i = 0; i < parameters.size(); i++) {
                 Object value = parameters.get(i);
                 if(value.getClass().isEnum()){
@@ -228,4 +225,3 @@ public class IngredientRepository implements Repository<Ingredient> {
         return ingredients;
     }
 }
-

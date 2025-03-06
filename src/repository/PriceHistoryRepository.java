@@ -2,10 +2,8 @@ package repository;
 
 import entity.PriceHistory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PriceHistoryRepository implements Repository<PriceHistory>{
@@ -15,9 +13,38 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
         this.connection = connection;
     }
 
+    private PriceHistory resultSetToPriceHistory(ResultSet rs) throws SQLException {
+        return new PriceHistory(
+            rs.getString("id"),
+            rs.getString("id_ingredient"),
+            rs.getTimestamp("price_datetime").toLocalDateTime(),
+            rs.getBigDecimal("unit_price")
+        );
+    }
+
+    public List<PriceHistory> findByIngredientId(String id){
+        List<PriceHistory> priceHistories = new ArrayList<>();
+        String query = """
+            select *
+                from "ingredient_price_history"
+                where "id_ingredient" = ?
+                order by "price_datetime" desc
+        """;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                priceHistories.add(resultSetToPriceHistory(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return priceHistories;
+    }
 
     @Override
-    public PriceHistory findById(String id) {
+    public PriceHistory findById(String id){
         throw new RuntimeException("no implemented");
     }
 
@@ -32,11 +59,12 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
     }
 
     @Override
-    public PriceHistory create (PriceHistory toCreate) {
+    public PriceHistory create(PriceHistory toCreate) {
         String query = """
             insert into "ingredient_price_history"("id", "id_ingredient", "price_datetime", "unit_price")
             values (?, ?, ?, ?);
-         """;
+        """;
+
         try{
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString (1, toCreate.getId());

@@ -9,7 +9,6 @@ public class PriceHistory {
     private String idIngredient;
     private LocalDateTime priceDatetime;
     private BigDecimal unitPrice;
-//    private BigDecimal totalPrice;
 
     public PriceHistory(String id, String idIngredient, LocalDateTime priceDatetime, BigDecimal unitPrice) {
         this.id = id;
@@ -50,20 +49,11 @@ public class PriceHistory {
         this.unitPrice = unitPrice;
     }
 
-//    public BigDecimal getTotalPrice() {
-//        return totalPrice;
-//    }
-
-//    public void setTotalPrice(BigDecimal totalPrice) {
-//        this.totalPrice = totalPrice;
-//    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PriceHistory that = (PriceHistory) o;
-        return Objects.equals(id, that.id) && Objects.equals(idIngredient, that.idIngredient) && Objects.equals(priceDatetime, that.priceDatetime) && Objects.equals(unitPrice, that.unitPrice) ;
+        return Objects.equals(id, that.id) && Objects.equals(idIngredient, that.idIngredient) && Objects.equals(priceDatetime, that.priceDatetime) && Objects.equals(unitPrice, that.unitPrice);
     }
 
     @Override
@@ -75,7 +65,7 @@ public class PriceHistory {
     public String toString() {
         return "PriceHistory{" +
                 "id='" + id + '\'' +
-                ", id_ingredient='" + idIngredient + '\'' +
+                ", idIngredient='" + idIngredient + '\'' +
                 ", priceDatetime=" + priceDatetime +
                 ", unitPrice=" + unitPrice +
                 '}';
