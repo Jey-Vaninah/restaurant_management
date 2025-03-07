@@ -9,12 +9,14 @@ public class Dish {
     private String name;
     private BigDecimal unitPrice;
     private List<Ingredient> ingredients;
+    private List<DishIngredient> dishIngredients;
 
-    public Dish(String id, String name, BigDecimal unitPrice, List<Ingredient> ingredients) {
+    public Dish(String id, String name, BigDecimal unitPrice, List<Ingredient> ingredients, List<DishIngredient> dishIngredients) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
         this.ingredients = ingredients;
+        this.dishIngredients = dishIngredients;
     }
 
     public String getId() {
@@ -49,16 +51,24 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
+    public List<DishIngredient> getDishIngredients() {
+        return dishIngredients;
+    }
+
+    public void setDishIngredients(List<DishIngredient> dishIngredients) {
+        this.dishIngredients = dishIngredients;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Dish dish = (Dish) o;
-        return Objects.equals(id, dish.id) && Objects.equals(name, dish.name) && Objects.equals(unitPrice, dish.unitPrice) && Objects.equals(ingredients, dish.ingredients);
+        return Objects.equals(id, dish.id) && Objects.equals(name, dish.name) && Objects.equals(unitPrice, dish.unitPrice) && Objects.equals(ingredients, dish.ingredients) && Objects.equals(dishIngredients, dish.dishIngredients);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, unitPrice, ingredients);
+        return Objects.hash(id, name, unitPrice, ingredients, dishIngredients);
     }
 
     @Override
@@ -68,6 +78,7 @@ public class Dish {
                 ", name='" + name + '\'' +
                 ", unitPrice=" + unitPrice +
                 ", ingredients=" + ingredients +
+                ", dishIngredients=" + dishIngredients +
                 '}';
     }
 }

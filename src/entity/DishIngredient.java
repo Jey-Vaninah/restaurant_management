@@ -4,13 +4,13 @@ import java.util.Objects;
 
 public class DishIngredient {
     private String idDish;
-    private String idIngredinet;
-    private String requiredQuantity;
+    private String idIngredient;
+    private Float requiredQuantity;
     private Unit unit;
 
-    public DishIngredient(String idDish, String idIngredinet, String requiredQuantity, Unit unit) {
+    public DishIngredient(String idDish, String idIngredient, Float requiredQuantity, Unit unit) {
         this.idDish = idDish;
-        this.idIngredinet = idIngredinet;
+        this.idIngredient = idIngredient;
         this.requiredQuantity = requiredQuantity;
         this.unit = unit;
     }
@@ -23,19 +23,19 @@ public class DishIngredient {
         this.idDish = idDish;
     }
 
-    public String getIdIngredinet() {
-        return idIngredinet;
+    public String getIdIngredient() {
+        return idIngredient;
     }
 
-    public void setIdIngredinet(String idIngredinet) {
-        this.idIngredinet = idIngredinet;
+    public void setIdIngredient(String idIngredient) {
+        this.idIngredient = idIngredient;
     }
 
-    public String getRequiredQuantity() {
+    public Float getRequiredQuantity() {
         return requiredQuantity;
     }
 
-    public void setRequiredQuantity(String requiredQuantity) {
+    public void setRequiredQuantity(Float requiredQuantity) {
         this.requiredQuantity = requiredQuantity;
     }
 
@@ -49,25 +49,23 @@ public class DishIngredient {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DishIngredient that = (DishIngredient) o;
-        return Objects.equals(idDish, that.idDish) && Objects.equals(idIngredinet, that.idIngredinet) && Objects.equals(requiredQuantity, that.requiredQuantity) && unit == that.unit;
+        return Objects.equals(idDish, that.idDish) && Objects.equals(idIngredient, that.idIngredient) && Objects.equals(requiredQuantity, that.requiredQuantity) && unit == that.unit;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idDish, idIngredinet, requiredQuantity, unit);
+        return Objects.hash(idDish, idIngredient, requiredQuantity, unit);
     }
 
     @Override
     public String toString() {
         return "DishIngredient{" +
                 "idDish='" + idDish + '\'' +
-                ", idIngredinet='" + idIngredinet + '\'' +
-                ", requiredQuantity='" + requiredQuantity + '\'' +
+                ", idIngredient='" + idIngredient + '\'' +
+                ", requiredQuantity=" + requiredQuantity +
                 ", unit=" + unit +
                 '}';
     }
 }
-

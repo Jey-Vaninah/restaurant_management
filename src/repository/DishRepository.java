@@ -1,6 +1,7 @@
 package repository;
 
 import entity.Dish;
+import entity.DishIngredient;
 import entity.Ingredient;
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,20 +10,25 @@ import java.util.List;
 public class DishRepository implements Repository<Dish> {
     private final Connection connection;
     private final IngredientRepository ingredientRepository;
+    private final DishIngredientRepository dishIngredientRepository;
 
     public DishRepository(Connection connection) {
         this.connection = connection;
         this.ingredientRepository = new IngredientRepository(connection);
+        this.dishIngredientRepository = new DishIngredientRepository(connection);
     }
 
     public Dish resultSetToDish(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         List<Ingredient> ingredients = this.ingredientRepository.findByDishId(id);
+        List<DishIngredient> dishIngredients = this.dishIngredientRepository.findByDishId(id);
+
         return new Dish(
             id,
             rs.getString("name"),
             rs.getBigDecimal("unit_price"),
-            ingredients
+            ingredients,
+            dishIngredients
         );
     }
 
