@@ -22,6 +22,22 @@ public class Ingredient {
         this.priceHistories = priceHistories;
     }
 
+    public BigDecimal getCost(LocalDateTime datetime){
+        return this.priceHistories
+            .stream()
+            .filter(priceHistory -> priceHistory.getPriceDatetime().isBefore(datetime.plusSeconds(1)))
+            .sorted(
+                (a, b) -> b.getPriceDatetime().compareTo(a.getPriceDatetime())
+            )
+            .map(PriceHistory::getUnitPrice)
+            .findFirst()
+            .orElse(this.getUnitPrice());
+    }
+
+    public BigDecimal getCost(){
+        return this.getCost(LocalDateTime.now());
+    }
+
     public String getId() {
         return id;
     }

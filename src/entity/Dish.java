@@ -1,6 +1,7 @@
 package entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +18,27 @@ public class Dish {
         this.unitPrice = unitPrice;
         this.ingredients = ingredients;
         this.dishIngredients = dishIngredients;
+    }
+
+    public BigDecimal getIngredientCosts(){
+        return this.getIngredientCosts(LocalDateTime.now());
+    }
+
+    public BigDecimal getIngredientCosts(LocalDateTime datetime){
+        return this.ingredients
+            .stream()
+            .map(ingredient -> {
+                BigDecimal unitCost = ingredient.getCost(datetime);
+                DishIngredient dishIngredient = this.dishIngredients
+                    .stream()
+                    .filter(
+                        di -> di.getIdIngredient().equals(ingredient.getId())
+                    )
+                    .findFirst()
+                    .orElseThrow();
+                return unitCost.multiply(BigDecimal.valueOf(dishIngredient.getRequiredQuantity()));
+            })
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public String getId() {

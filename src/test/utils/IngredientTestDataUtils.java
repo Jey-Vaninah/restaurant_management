@@ -15,9 +15,9 @@ import static entity.Unit.U;
 public class IngredientTestDataUtils {
     public static Ingredient saucisse() {
         List<PriceHistory> priceHistories = new ArrayList<>(List.of(
-            new PriceHistory("P006","I001", LocalDateTime.parse("2025-03-03T00:00:00"), new BigDecimal("40.00")),
-            new PriceHistory("P005","I001", LocalDateTime.parse("2025-02-02T00:00:00"), new BigDecimal("30.00")),
-            new PriceHistory("P001","I001", LocalDateTime.parse("2025-01-01T00:00:00"), new BigDecimal("20.00"))
+            new PriceHistory("P001","I001", LocalDateTime.parse("2025-01-01T00:00:00"), new BigDecimal("20.00")),
+            new PriceHistory("P006","I001", LocalDateTime.parse("2024-03-03T00:00:00"), new BigDecimal("10.00")),
+            new PriceHistory("P005","I001", LocalDateTime.parse("2024-02-02T00:00:00"), new BigDecimal("5.00"))
         ));
 
         return new Ingredient(
