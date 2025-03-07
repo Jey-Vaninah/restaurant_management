@@ -20,6 +20,14 @@ public class Dish {
         this.dishIngredients = dishIngredients;
     }
 
+    public BigDecimal getGrossMargin(){
+        return this.getGrossMargin(LocalDateTime.now());
+    }
+
+    public BigDecimal getGrossMargin(LocalDateTime datetime){
+        return this.unitPrice.subtract(this.getIngredientCosts(datetime));
+    }
+
     public BigDecimal getIngredientCosts(){
         return this.getIngredientCosts(LocalDateTime.now());
     }

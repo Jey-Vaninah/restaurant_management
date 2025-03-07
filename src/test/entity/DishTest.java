@@ -19,7 +19,7 @@ public class DishTest {
 
         BigDecimal actual = subject.getIngredientCosts();
 
-        assertEquals(expected.setScale(2, RoundingMode.DOWN), actual.setScale(2, RoundingMode.DOWN));
+        assertEquals(expected.setScale(2, RoundingMode.HALF_UP), actual.setScale(2, RoundingMode.HALF_UP));
     }
 
     @Test
@@ -28,6 +28,24 @@ public class DishTest {
 
         BigDecimal actual = subject.getIngredientCosts(LocalDateTime.parse("2024-02-02T00:00:00"));
 
-        assertEquals(expected.setScale(2, RoundingMode.DOWN), actual.setScale(2, RoundingMode.DOWN));
+        assertEquals(expected.setScale(2, RoundingMode.HALF_UP), actual.setScale(2, RoundingMode.HALF_UP));
+    }
+
+    @Test
+    void should_calc_correct_gross_margin_with_current_date(){
+        BigDecimal expected = new BigDecimal("9500.00");
+
+        BigDecimal actual = subject.getGrossMargin();
+
+        assertEquals(expected.setScale(2, RoundingMode.HALF_UP), actual.setScale(2, RoundingMode.HALF_UP));
+    }
+
+    @Test
+    void should_calc_correct_gross_margin_with_specific_date(){
+        BigDecimal expected = new BigDecimal("11000.00");
+
+        BigDecimal actual = subject.getGrossMargin(LocalDateTime.parse("2024-02-02T00:00:00"));
+
+        assertEquals(expected.setScale(2, RoundingMode.HALF_UP), actual.setScale(2, RoundingMode.HALF_UP));
     }
 }
