@@ -2,7 +2,6 @@ package test.utils;
 
 import entity.Dish;
 import entity.DishIngredient;
-import java.math.BigDecimal;
 import java.util.List;
 
 import static entity.Unit.*;
@@ -13,7 +12,7 @@ public class DishTestDataUtils {
         return new Dish(
             "D001",
             "Hot Dog",
-            new BigDecimal("15000.00"),
+            15_000d,
             List.of(huile(), oeuf(), pain(), saucisse()),
             List.of(
                 new DishIngredient("D001", "I001", 100f, G),
