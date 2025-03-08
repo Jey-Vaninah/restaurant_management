@@ -12,15 +12,7 @@ public class Ingredient {
     private BigDecimal unitPrice;
     private Unit unit;
     private List<PriceHistory> priceHistories;
-
-    public Ingredient(String id, String name, LocalDateTime updateDatetime, BigDecimal unitPrice, Unit unit, List<PriceHistory> priceHistories) {
-        this.id = id;
-        this.name = name;
-        this.updateDatetime = updateDatetime;
-        this.unitPrice = unitPrice;
-        this.unit = unit;
-        this.priceHistories = priceHistories;
-    }
+    private List<IngredientStockMovement> ingredientStockMovements;
 
     public BigDecimal getCost(LocalDateTime datetime){
         return this.priceHistories
@@ -36,6 +28,16 @@ public class Ingredient {
 
     public BigDecimal getCost(){
         return this.getCost(LocalDateTime.now());
+    }
+
+    public Ingredient(String id, String name, LocalDateTime updateDatetime, BigDecimal unitPrice, Unit unit, List<PriceHistory> priceHistories, List<IngredientStockMovement> ingredientStockMovements) {
+        this.id = id;
+        this.name = name;
+        this.updateDatetime = updateDatetime;
+        this.unitPrice = unitPrice;
+        this.unit = unit;
+        this.priceHistories = priceHistories;
+        this.ingredientStockMovements = ingredientStockMovements;
     }
 
     public String getId() {
@@ -86,16 +88,24 @@ public class Ingredient {
         this.priceHistories = priceHistories;
     }
 
+    public List<IngredientStockMovement> getIngredientStocks() {
+        return ingredientStockMovements;
+    }
+
+    public void setIngredientStocks(List<IngredientStockMovement> ingredientStockMovements) {
+        this.ingredientStockMovements = ingredientStockMovements;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updateDatetime, that.updateDatetime) && Objects.equals(unitPrice, that.unitPrice) && unit == that.unit && Objects.equals(priceHistories, that.priceHistories);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(updateDatetime, that.updateDatetime) && Objects.equals(unitPrice, that.unitPrice) && unit == that.unit && Objects.equals(priceHistories, that.priceHistories) && Objects.equals(ingredientStockMovements, that.ingredientStockMovements);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, updateDatetime, unitPrice, unit, priceHistories);
+        return Objects.hash(id, name, updateDatetime, unitPrice, unit, priceHistories, ingredientStockMovements);
     }
 
     @Override
@@ -107,6 +117,7 @@ public class Ingredient {
                 ", unitPrice=" + unitPrice +
                 ", unit=" + unit +
                 ", priceHistories=" + priceHistories +
+                ", ingredientStockMovements=" + ingredientStockMovements +
                 '}';
     }
 }

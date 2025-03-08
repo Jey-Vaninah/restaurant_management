@@ -1,6 +1,7 @@
 package repository;
 
 import entity.Ingredient;
+import entity.IngredientStockMovement;
 import entity.PriceHistory;
 import entity.Unit;
 
@@ -10,17 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientRepository implements Repository<Ingredient> {
-    final private Connection connection;
-    final private PriceHistoryRepository priceHistoryRepository;
+    private final Connection connection;
+    private final PriceHistoryRepository priceHistoryRepository;
+    private final IngredientStockMovementRepository ingredientStockMovementRepository;
 
     public IngredientRepository(Connection connection) {
         this.connection = connection;
         this.priceHistoryRepository = new PriceHistoryRepository(this.connection);
+        this.ingredientStockMovementRepository = new IngredientStockMovementRepository(this.connection);
     }
 
     private Ingredient resultSetToIngredient(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         List<PriceHistory> priceHistories = this.priceHistoryRepository.findByIngredientId(id);
+        List<IngredientStockMovement> ingredientStockMovements = this.ingredientStockMovementRepository.findByIngredientId(id);
 
         return new Ingredient(
             id,
@@ -28,7 +32,8 @@ public class IngredientRepository implements Repository<Ingredient> {
             rs.getTimestamp("update_datetime").toLocalDateTime(),
             rs.getBigDecimal("unit_price"),
             Unit.valueOf(rs.getString("unit")),
-            priceHistories
+            priceHistories,
+            ingredientStockMovements
         );
     }
 
