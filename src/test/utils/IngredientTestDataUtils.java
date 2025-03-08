@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static entity.IngredientStockMovementType.IN;
+import static entity.IngredientStockMovementType.OUT;
 import static entity.Unit.G;
 import static entity.Unit.L;
 import static entity.Unit.U;
@@ -63,7 +64,9 @@ public class IngredientTestDataUtils {
         );
 
         List<IngredientStockMovement> ingredientStockMovements = List.of(
-            new IngredientStockMovement("S003", "I003",100f, LocalDateTime.parse("2025-02-01T08:00:00"), IN, U)
+            new IngredientStockMovement("S003", "I003",100f, LocalDateTime.parse("2025-02-01T08:00:00"), IN, U),
+            new IngredientStockMovement("S005", "I003",10f, LocalDateTime.parse("2025-02-02T10:00:00"), OUT, U),
+            new IngredientStockMovement("S006", "I003",10f, LocalDateTime.parse("2025-02-03T15:00:00"), OUT, U)
         );
 
         return new Ingredient(
@@ -83,7 +86,8 @@ public class IngredientTestDataUtils {
         );
 
         List<IngredientStockMovement> ingredientStockMovements = List.of(
-            new IngredientStockMovement("S004", "I004", 50f, LocalDateTime.parse("2025-02-01T08:00:00"), IN, U)
+            new IngredientStockMovement("S004", "I004", 50f, LocalDateTime.parse("2025-02-01T08:00:00"), IN, U),
+            new IngredientStockMovement("S007", "I004",20f, LocalDateTime.parse("2025-02-05T16:00:00"), OUT, U)
         );
 
         return new Ingredient(

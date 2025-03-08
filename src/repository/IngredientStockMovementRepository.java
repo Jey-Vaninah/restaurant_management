@@ -35,7 +35,7 @@ public class IngredientStockMovementRepository implements Repository<IngredientS
             select *
                 from "ingredient_stock_movement"
                 where "id_ingredient" = ?
-                order by "movement_datetime" desc
+                order by "id" asc 
         """;
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);

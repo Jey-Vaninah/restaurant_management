@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static entity.IngredientStockMovementType.IN;
+
 public class Ingredient {
     private String id;
     private String name;
@@ -28,6 +30,23 @@ public class Ingredient {
 
     public BigDecimal getCost(){
         return this.getCost(LocalDateTime.now());
+    }
+
+    public Float getAvailableQuantity(){
+        return this.getAvailableQuantity(LocalDateTime.now());
+    }
+
+    public Float getAvailableQuantity(LocalDateTime datetime){
+        return this.ingredientStockMovements
+            .stream()
+            .filter(
+                im -> im.getMovementDatetime().isBefore(datetime.plusSeconds(1))
+            )
+            .map(im -> {
+                int multiply = im.getMovementType().equals(IN) ? 1 : -1;
+                return im.getQuantity() * multiply;
+            })
+            .reduce((float) 0, Float::sum);
     }
 
     public Ingredient(String id, String name, LocalDateTime updateDatetime, BigDecimal unitPrice, Unit unit, List<PriceHistory> priceHistories, List<IngredientStockMovement> ingredientStockMovements) {
