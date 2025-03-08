@@ -1,6 +1,5 @@
 package entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -8,9 +7,9 @@ public class PriceHistory {
     private String id;
     private String idIngredient;
     private LocalDateTime priceDatetime;
-    private BigDecimal unitPrice;
+    private Double unitPrice;
 
-    public PriceHistory(String id, String idIngredient, LocalDateTime priceDatetime, BigDecimal unitPrice) {
+    public PriceHistory(String id, String idIngredient, LocalDateTime priceDatetime, Double unitPrice) {
         this.id = id;
         this.idIngredient = idIngredient;
         this.priceDatetime = priceDatetime;
@@ -41,11 +40,11 @@ public class PriceHistory {
         this.priceDatetime = priceDatetime;
     }
 
-    public BigDecimal getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 

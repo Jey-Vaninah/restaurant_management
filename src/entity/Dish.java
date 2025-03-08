@@ -8,11 +8,11 @@ import java.util.Objects;
 public class Dish {
     private String id;
     private String name;
-    private BigDecimal unitPrice;
+    private Double unitPrice;
     private List<Ingredient> ingredients;
     private List<DishIngredient> dishIngredients;
 
-    public Dish(String id, String name, BigDecimal unitPrice, List<Ingredient> ingredients, List<DishIngredient> dishIngredients) {
+    public Dish(String id, String name, Double unitPrice, List<Ingredient> ingredients, List<DishIngredient> dishIngredients) {
         this.id = id;
         this.name = name;
         this.unitPrice = unitPrice;
@@ -20,23 +20,23 @@ public class Dish {
         this.dishIngredients = dishIngredients;
     }
 
-    public BigDecimal getGrossMargin(){
+    public Double getGrossMargin(){
         return this.getGrossMargin(LocalDateTime.now());
     }
 
-    public BigDecimal getGrossMargin(LocalDateTime datetime){
-        return this.unitPrice.subtract(this.getIngredientCosts(datetime));
+    public Double getGrossMargin(LocalDateTime datetime){
+        return this.unitPrice - this.getIngredientCosts(datetime);
     }
 
-    public BigDecimal getIngredientCosts(){
+    public Double getIngredientCosts(){
         return this.getIngredientCosts(LocalDateTime.now());
     }
 
-    public BigDecimal getIngredientCosts(LocalDateTime datetime){
+    public Double getIngredientCosts(LocalDateTime datetime){
         return this.ingredients
             .stream()
             .map(ingredient -> {
-                BigDecimal unitCost = ingredient.getCost(datetime);
+                Double unitCost = ingredient.getCost(datetime);
                 DishIngredient dishIngredient = this.dishIngredients
                     .stream()
                     .filter(
@@ -44,9 +44,9 @@ public class Dish {
                     )
                     .findFirst()
                     .orElseThrow();
-                return unitCost.multiply(BigDecimal.valueOf(dishIngredient.getRequiredQuantity()));
+                return unitCost * dishIngredient.getRequiredQuantity();
             })
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .reduce((double) 0, Double::sum);
     }
 
     public String getId() {
@@ -65,11 +65,11 @@ public class Dish {
         this.name = name;
     }
 
-    public BigDecimal getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 

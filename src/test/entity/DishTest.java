@@ -15,16 +15,16 @@ public class DishTest {
 
     @Test
     void should_calc_correct_ingredient_costs_with_current_date(){
-        BigDecimal expected = new BigDecimal("5500.00");
+        Double expected = 5_500.00;
 
-        BigDecimal actual = subject.getIngredientCosts();
+        Double actual = subject.getIngredientCosts();
 
-        assertEquals(expected.setScale(2, RoundingMode.HALF_UP), actual.setScale(2, RoundingMode.HALF_UP));
+        assertEquals(expected , actual);
     }
 
     @Test
     void should_calc_correct_ingredient_costs_with_specific_date(){
-        BigDecimal expected = new BigDecimal("4000.00");
+         expected = new BigDecimal("4000.00");
 
         BigDecimal actual = subject.getIngredientCosts(LocalDateTime.parse("2024-02-02T00:00:00"));
 

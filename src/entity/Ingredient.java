@@ -1,6 +1,5 @@
 package entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -9,11 +8,11 @@ public class Ingredient {
     private String id;
     private String name;
     private LocalDateTime updateDatetime;
-    private BigDecimal unitPrice;
+    private Double unitPrice;
     private Unit unit;
     private List<PriceHistory> priceHistories;
 
-    public Ingredient(String id, String name, LocalDateTime updateDatetime, BigDecimal unitPrice, Unit unit, List<PriceHistory> priceHistories) {
+    public Ingredient(String id, String name, LocalDateTime updateDatetime, Double unitPrice, Unit unit, List<PriceHistory> priceHistories) {
         this.id = id;
         this.name = name;
         this.updateDatetime = updateDatetime;
@@ -22,7 +21,7 @@ public class Ingredient {
         this.priceHistories = priceHistories;
     }
 
-    public BigDecimal getCost(LocalDateTime datetime){
+    public Double getCost(LocalDateTime datetime){
         return this.priceHistories
             .stream()
             .filter(priceHistory -> priceHistory.getPriceDatetime().isBefore(datetime.plusSeconds(1)))
@@ -34,7 +33,7 @@ public class Ingredient {
             .orElse(this.getUnitPrice());
     }
 
-    public BigDecimal getCost(){
+    public Double getCost(){
         return this.getCost(LocalDateTime.now());
     }
 
@@ -62,11 +61,11 @@ public class Ingredient {
         this.updateDatetime = updateDatetime;
     }
 
-    public BigDecimal getUnitPrice() {
+    public Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
+    public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 

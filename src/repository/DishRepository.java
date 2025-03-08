@@ -26,7 +26,7 @@ public class DishRepository implements Repository<Dish> {
         return new Dish(
             id,
             rs.getString("name"),
-            rs.getBigDecimal("unit_price"),
+            rs.getDouble("unit_price"),
             ingredients,
             dishIngredients
         );
@@ -97,7 +97,7 @@ public class DishRepository implements Repository<Dish> {
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString(1, toCreate.getId());
             prs.setString(2, toCreate.getName());
-            prs.setBigDecimal(3, toCreate.getUnitPrice());
+            prs.setDouble(3, toCreate.getUnitPrice());
             prs.executeUpdate();
             return this.findById(toCreate.getId());
         } catch (SQLException error) {
@@ -116,7 +116,7 @@ public class DishRepository implements Repository<Dish> {
         try {
             PreparedStatement prs = connection.prepareStatement(query);
             prs.setString(1, toUpdate.getName());
-            prs.setBigDecimal(2, toUpdate.getUnitPrice());
+            prs.setDouble(2, toUpdate.getUnitPrice());
             prs.setString(3, toUpdate.getId());
             prs.executeUpdate();
             return this.findById(toUpdate.getId());

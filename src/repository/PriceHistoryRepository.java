@@ -18,7 +18,7 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
             rs.getString("id"),
             rs.getString("id_ingredient"),
             rs.getTimestamp("price_datetime").toLocalDateTime(),
-            rs.getBigDecimal("unit_price")
+            rs.getDouble("unit_price")
         );
     }
 
@@ -70,7 +70,7 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
             prs.setString (1, toCreate.getId());
             prs.setString (2, toCreate.getIdIngredient());
             prs.setTimestamp(3, Timestamp.valueOf(toCreate.getPriceDatetime()));
-            prs.setBigDecimal (4, toCreate.getUnitPrice());
+            prs.setDouble(4, toCreate.getUnitPrice());
             prs.executeUpdate();
             return this.findById(toCreate.getId());
         }catch (SQLException error){
