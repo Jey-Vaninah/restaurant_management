@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static test.utils.IngredientTestDataUtils.*;
 
 class IngredientTest {
-    private static LocalDateTime DATETIME = LocalDateTime.parse("2025-02-24T00:00:00");
+    private static final LocalDateTime DATETIME = LocalDateTime.parse("2025-02-24T00:00:00");
 
     @Test
     void saucisse_get_available_quantity(){

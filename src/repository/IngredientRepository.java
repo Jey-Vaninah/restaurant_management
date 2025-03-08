@@ -125,7 +125,7 @@ public class IngredientRepository implements Repository<Ingredient> {
             prs.setString (2, toCreate.getName());
             prs.setTimestamp(3, Timestamp.valueOf(toCreate.getUpdateDatetime()));
             prs.setBigDecimal (4, toCreate.getUnitPrice());
-            prs.setString (5, toCreate.getUnit().toString());
+            prs.setObject(5, toCreate.getUnit(), Types.OTHER);
             prs.executeUpdate();
             return this.findById(toCreate.getId());
         }catch (SQLException error){
@@ -148,7 +148,7 @@ public class IngredientRepository implements Repository<Ingredient> {
             prs.setString (1, toUpdate.getName());
             prs.setTimestamp(2, Timestamp.valueOf(toUpdate.getUpdateDatetime()));
             prs.setBigDecimal(3, toUpdate.getUnitPrice());
-            prs.setString (4, toUpdate.getUnit().toString());
+            prs.setObject(4, toUpdate.getUnit(), Types.OTHER);
             prs.setString (5, toUpdate.getId());
             prs.executeUpdate();
             return this.findById(toUpdate.getId());

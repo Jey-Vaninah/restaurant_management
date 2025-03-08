@@ -45,7 +45,20 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
 
     @Override
     public PriceHistory findById(String id){
-        throw new RuntimeException("no implemented");
+        String query = """
+            select * from "ingredient_price_history" where "id" = ?
+        """;
+        try{
+            PreparedStatement st = connection.prepareStatement(query);
+            st.setString(1, id);
+            ResultSet rs = st.executeQuery();
+            if(rs.next()) {
+                return resultSetToPriceHistory(rs);
+            }
+            return null;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -55,7 +68,19 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
 
     @Override
     public PriceHistory deleteById(String id) {
-        throw new RuntimeException("no implemented");
+        String query = """
+            delete from "ingredient_price_history" where "id" = ?;
+        """;
+
+        try{
+            final PriceHistory toDelete = this.findById((id));
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toDelete.getId());
+            prs.executeUpdate();
+            return toDelete;
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
     }
 
     @Override

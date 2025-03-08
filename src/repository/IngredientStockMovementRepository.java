@@ -4,10 +4,7 @@ import entity.IngredientStockMovement;
 import entity.IngredientStockMovementType;
 import entity.Unit;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +49,20 @@ public class IngredientStockMovementRepository implements Repository<IngredientS
 
     @Override
     public IngredientStockMovement findById(String id) {
-        return null;
+        String query = """
+            select * from ingredient_stock_movement where id = ?";
+        """;
+        try{
+            PreparedStatement st = connection.prepareStatement(query);
+            st.setString(1, id);
+            ResultSet rs = st.executeQuery();
+            if(rs.next()) {
+                return resultSetToIngredientStock(rs);
+            }
+            return null;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -62,12 +72,40 @@ public class IngredientStockMovementRepository implements Repository<IngredientS
 
     @Override
     public IngredientStockMovement deleteById(String id) {
-        return null;
+        String query = """
+            delete from "ingredient_stock_movement" where "id" = ?;
+        """;
+
+        try{
+            final IngredientStockMovement toDelete = this.findById((id));
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toDelete.id());
+            prs.executeUpdate();
+            return toDelete;
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
     }
 
     @Override
-    public IngredientStockMovement create(IngredientStockMovement id) {
-        return null;
+    public IngredientStockMovement create(IngredientStockMovement toCreate) {
+        String query = """
+            insert into "ingredient_stock_movement"("id", "id_ingredient", "quantity", "movement_datetime", "movement_type", "unit")
+            values (?, ?, ?, ?, ?, ?);
+         """;
+        try{
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toCreate.id());
+            prs.setString (2, toCreate.idIngredient());
+            prs.setFloat(3, toCreate.quantity());
+            prs.setTimestamp(4, Timestamp.valueOf(toCreate.movementDatetime()));
+            prs.setObject(5, toCreate.movementType(), Types.OTHER);
+            prs.setObject(6, toCreate.unit(), Types.OTHER);
+            prs.executeUpdate();
+            return this.findById(toCreate.id());
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
     }
 
     @Override

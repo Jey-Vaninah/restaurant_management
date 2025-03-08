@@ -40,11 +40,11 @@ public class Ingredient {
         return this.ingredientStockMovements
             .stream()
             .filter(
-                im -> im.getMovementDatetime().isBefore(datetime.plusSeconds(1))
+                im -> im.movementDatetime().isBefore(datetime.plusSeconds(1))
             )
             .map(im -> {
-                int multiply = im.getMovementType().equals(IN) ? 1 : -1;
-                return im.getQuantity() * multiply;
+                int multiply = im.movementType().equals(IN) ? 1 : -1;
+                return im.quantity() * multiply;
             })
             .reduce((float) 0, Float::sum);
     }

@@ -100,4 +100,36 @@ public class IngredientTestDataUtils {
             ingredientStockMovements
         );
     }
+
+    public static Ingredient sel(){
+        List<PriceHistory> priceHistories = List.of(
+            new PriceHistory("P007","I005", LocalDateTime.now(), new BigDecimal("2.50"))
+        );
+
+        return new Ingredient(
+            "I005",
+            "Sel",
+            LocalDateTime.now(),
+            new BigDecimal("2.50"),
+            G,
+            priceHistories,
+            List.of()
+        );
+    }
+
+    public static Ingredient riz(){
+        List<PriceHistory> priceHistories = List.of(
+            new PriceHistory("P008","I006", LocalDateTime.now(), new BigDecimal("3.50"))
+        );
+
+        return new Ingredient(
+            "I006",
+            "Riz",
+            LocalDateTime.now(),
+            new BigDecimal("3.50"),
+            G,
+            priceHistories,
+            List.of()
+        );
+    }
 }
