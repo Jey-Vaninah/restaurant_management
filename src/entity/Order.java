@@ -1,12 +1,14 @@
 package entity;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static entity.StatusHistory.CREATE;
+import static entity.StatusHistory.SERVED;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 
@@ -17,6 +19,34 @@ public class Order {
     private LocalDateTime updatedAt;
     private ArrayList<DishOrder> dishOrders;
     private ArrayList<OrderStatus> statusHistories;
+
+    public Duration getOrderDuration() {
+        LocalDateTime created = this.createdAt;
+        LocalDateTime servedAt = this.getStatusHistories().stream()
+                .filter(status -> status.getStatus().equals(SERVED))
+                .map(OrderStatus::getCreatedAt)
+                .findFirst()
+                .orElseThrow();
+
+        return Duration.between(created, servedAt);
+    }
+
+    public Duration getStatusDuration(StatusHistory statusFrom, StatusHistory statusTo) {
+        LocalDateTime statusFromTime = this.getStatusHistories().stream()
+                .filter(status -> status.getStatus().equals(statusFrom))
+                .map(OrderStatus::getCreatedAt)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Status " + statusFrom + " not found"));
+
+        LocalDateTime statusToTime = this.getStatusHistories().stream()
+                .filter(status -> status.getStatus().equals(statusTo))
+                .map(OrderStatus::getCreatedAt)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Status " + statusTo + " not found"));
+
+        return Duration.between(statusFromTime, statusToTime);
+    }
+
 
     public BigDecimal getTotalAmount(){
         return this.getDishOrders()
