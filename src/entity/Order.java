@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static entity.StatusHistory.CREATE;
+import static entity.StatusHistory.CREATED;
 import static entity.StatusHistory.SERVED;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
@@ -65,12 +65,12 @@ public class Order {
                     return -1;
                 }
                 return 0;
-            }).orElse(new OrderStatus(randomUUID().toString(), this.getId(), CREATE, now(), now()));
+            }).orElse(new OrderStatus(randomUUID().toString(), this.getId(), CREATED, now(), now()));
     }
 
     public List<DishOrder> addDishOrders(List<DishOrder> dishOrders) {
         OrderStatus actualStatus = this.getActualStatus();
-        if (!CREATE.equals(actualStatus.getStatus())) {
+        if (!CREATED.equals(actualStatus.getStatus())) {
             throw new RuntimeException("Only CREATE status can be updated");
         }
         this.dishOrders.addAll(dishOrders);

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static entity.StatusHistory.CREATE;
+import static entity.StatusHistory.CREATED;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 
@@ -24,7 +24,7 @@ public class DishOrder {
                     return -1;
                 }
                 return 0;
-            }).orElse(new DishOrderStatus(randomUUID().toString(), this.getId(), CREATE, now(), now()));
+            }).orElse(new DishOrderStatus(randomUUID().toString(), this.getId(), CREATED, now(), now()));
     }
 
     public BigDecimal getCost(){

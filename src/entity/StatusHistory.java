@@ -1,7 +1,7 @@
 package entity;
 
 public enum StatusHistory {
-    CREATE,
+    CREATED,
     CONFIRMED,
     IN_PREPARATION,
     COMPLETED,

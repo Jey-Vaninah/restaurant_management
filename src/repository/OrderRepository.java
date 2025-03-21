@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static entity.StatusHistory.CREATE;
+import static entity.StatusHistory.CREATED;
 
 public class OrderRepository implements Repository<Order> {
     private final Connection connection;
@@ -133,7 +133,7 @@ public class OrderRepository implements Repository<Order> {
             stmt.setTimestamp(2, Timestamp.valueOf(order.getUpdatedAt()));
             stmt.executeUpdate();
 
-            OrderStatus createdStatus = new OrderStatus(order.getId(), "O001", CREATE, order.getUpdatedAt(), order.getUpdatedAt());
+            OrderStatus createdStatus = new OrderStatus(order.getId(), "O001", CREATED, order.getUpdatedAt(), order.getUpdatedAt());
             orderStatusRepository.create(createdStatus);
 
             for (DishOrder dishOrder : order.getDishOrders()) {

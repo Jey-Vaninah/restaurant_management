@@ -6,4 +6,4 @@ INSERT INTO "ingredient_price_history" ("id","id_ingredient", "price_datetime", 
 
 INSERT INTO "ingredient_price_history" ("id","id_ingredient", "price_datetime", "unit_price") VALUES
       ('P005', 'I001', '2024-02-02 00:00', 5),
-      ('P006', 'I001', '2024-03-03 00:00', 10)
+      ('P006', 'I001', '2024-03-03 00:00', 10);

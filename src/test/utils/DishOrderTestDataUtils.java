@@ -13,7 +13,7 @@ import static test.utils.DishTestDataUtils.omelette;
 public class DishOrderTestDataUtils {
     public static DishOrder hotDogDishOrder() {
         List<DishOrderStatus> dishOrderStatus = List.of(
-            new DishOrderStatus("DOS001", "DO001", CREATE, LocalDateTime.parse("2025-10-10T00:00:00"), LocalDateTime.parse("2025-10-10T00:00:00")),
+            new DishOrderStatus("DOS001", "DO001", CREATED, LocalDateTime.parse("2025-10-10T00:00:00"), LocalDateTime.parse("2025-10-10T00:00:00")),
             new DishOrderStatus("DOS002", "DO001", CONFIRMED, LocalDateTime.parse("2025-10-10T01:00:00"), LocalDateTime.parse("2025-10-10T01:00:00")),
             new DishOrderStatus("DOS003", "DO001", IN_PREPARATION, LocalDateTime.parse("2025-10-10T01:30:00"), LocalDateTime.parse("2025-10-10T01:30:00"))
         );

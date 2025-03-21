@@ -2,7 +2,7 @@ do
 $$
     begin
         if not exists (select from pg_type where typname  = 'status_history') THEN
-            create type "status_history" as enum ('CREATE', 'CONFIRMED', 'IN_PREPARATION', 'COMPLETED', 'SERVED');
+            create type "status_history" as enum ('CREATED', 'CONFIRMED', 'IN_PREPARATION', 'COMPLETED', 'SERVED');
         end if;
     end
 $$;
