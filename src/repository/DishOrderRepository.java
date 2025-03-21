@@ -22,7 +22,7 @@ public class DishOrderRepository implements Repository<DishOrder> {
         this.dishRepository = new DishRepository(connection);
     }
 
-    private DishOrder resultSetToDishOrderStatus(ResultSet rs) throws SQLException {
+    private DishOrder resultSetToDishOrder(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         Dish dish = dishRepository.findById(rs.getString("id_dish"));
         List<DishOrderStatus> dishOrderStatuses = dishOrderStatusRepository.findByDishOrderId(id);
@@ -47,7 +47,7 @@ public class DishOrderRepository implements Repository<DishOrder> {
             preparedStatement.setString(1, orderId);
             ResultSet rs = preparedStatement.executeQuery();
             while(rs.next()){
-                dishOrders.add(resultSetToDishOrderStatus(rs));
+                dishOrders.add(resultSetToDishOrder(rs));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -57,11 +57,12 @@ public class DishOrderRepository implements Repository<DishOrder> {
 
     @Override
     public DishOrder create(DishOrder dishOrder) {
-        String query = "insert into dish_order(id_order, id_dish, quantity) values (?, ?, ?)";
+        String query = "insert into dish_order(id, id_order, id_dish, quantity) values (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, dishOrder.getOrderId());
-            stmt.setString(2, dishOrder.getDish().getId());
-            stmt.setInt(3, dishOrder.getQuantity());
+            stmt.setString(1, dishOrder.getId());
+            stmt.setString(2, dishOrder.getOrderId());
+            stmt.setString(3, dishOrder.getDish().getId());
+            stmt.setInt(4, dishOrder.getQuantity());
             stmt.executeUpdate();
             return dishOrder;
         } catch (SQLException e) {
@@ -72,6 +73,16 @@ public class DishOrderRepository implements Repository<DishOrder> {
 
     @Override
     public DishOrder findById(String id) {
+        String query = "SELECT * FROM dish_order WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return resultSetToDishOrder(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding DishOrder by id: " + e.getMessage(), e);
+        }
         return null;
     }
 

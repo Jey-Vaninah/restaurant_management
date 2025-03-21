@@ -3,10 +3,8 @@ package repository;
 import entity.OrderStatus;
 import entity.StatusHistory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +42,31 @@ public class OrderStatusRepository implements Repository<OrderStatus> {
             throw new RuntimeException(e);
         }
         return orderStatuses;
+    }
+
+    public void insertOrderStatus(OrderStatus orderStatus) throws SQLException {
+        String query = "INSERT INTO order_status (id, id_order, status, updated_at, created_date) VALUES (?, ?, ?, ?, ?)";
+
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, orderStatus.getId());
+        ps.setString(2, orderStatus.getIdOrder());
+        ps.setObject(3, orderStatus.getStatus(), Types.OTHER); // Convertir en chaîne
+        ps.setTimestamp(4, Timestamp.valueOf(orderStatus.getUpdatedAt()));
+        ps.setTimestamp(5, Timestamp.valueOf(orderStatus.getUpdatedAt()));
+        ps.executeUpdate();
+    }
+
+
+    public void updateOrderStatus(String id, StatusHistory newStatus, LocalDateTime updatedAt) throws SQLException {
+        String query = "UPDATE order_status SET status = ?, updated_at = ? WHERE id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, newStatus.name());
+            ps.setTimestamp(2, Timestamp.valueOf(updatedAt));
+            ps.setString(3, id);
+
+            ps.executeUpdate();
+        }
     }
 
     @Override

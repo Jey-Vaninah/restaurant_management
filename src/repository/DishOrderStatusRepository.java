@@ -3,10 +3,8 @@ package repository;
 import entity.DishOrderStatus;
 import entity.StatusHistory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +42,28 @@ public class DishOrderStatusRepository implements Repository<DishOrderStatus> {
             throw new RuntimeException(e);
         }
         return dishOrderStatuses;
+    }
+
+    public void createDishOrderStatus(DishOrderStatus dishOrderStatus) throws SQLException {
+        String query = "INSERT INTO dish_order_status (id, id_dish_order, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, dishOrderStatus.getId());
+        ps.setString(2, dishOrderStatus.getDishOrderId());
+        ps.setObject(3, dishOrderStatus.getStatus(), Types.OTHER);
+        ps.setString(4, Timestamp.valueOf(dishOrderStatus.getCreatedAt()).toLocalDateTime().toString());
+        ps.setString(5, Timestamp.valueOf(dishOrderStatus.getUpdatedAt()).toLocalDateTime().toString());
+        ps.executeUpdate();
+    }
+
+    public void updateDishOrderStatus(String id, StatusHistory newStatus, LocalDateTime updatedAt) throws SQLException {
+        String query = "UPDATE dish_order_status SET status = ?, updated_at = ? WHERE id = ?";
+
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, newStatus.name());
+        ps.setTimestamp(2, Timestamp.valueOf(updatedAt));
+        ps.setString(3, id);
+
+        ps.executeUpdate();
     }
 
     @Override

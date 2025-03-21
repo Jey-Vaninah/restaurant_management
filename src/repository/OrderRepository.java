@@ -1,16 +1,14 @@
 package repository;
 
-import entity.DishOrder;
-import entity.Ingredient;
+import entity.*;
 import entity.Order;
-import entity.OrderStatus;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static entity.StatusHistory.CREATE;
 
 public class OrderRepository implements Repository<Order> {
     private final Connection connection;
@@ -56,6 +54,60 @@ public class OrderRepository implements Repository<Order> {
         }
     }
 
+    public void updateOrderStatus(String idOrder, StatusHistory newStatus) throws SQLException {
+        String query = "UPDATE order SET status = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, newStatus.name());
+            stmt.setString(2, idOrder);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void addDishToOrder(String orderId, DishOrder dishOrder) throws SQLException {
+        if (isOrderConfirmed(orderId)) {
+            throw new IllegalStateException("Impossible de modifier une commande confirmée.");
+        }
+
+        if (!areIngredientsAvailable(dishOrder)) {
+            throw new IllegalStateException("Ingrédients insuffisants pour préparer ce plat.");
+        }
+
+        dishOrderRepository.create(dishOrder);
+    }
+
+    private boolean areIngredientsAvailable(DishOrder dishOrder) throws SQLException {
+        List<Ingredient> ingredients = dishOrder.getDish().getIngredients();
+        for (Ingredient ingredient : ingredients) {
+            float availableQuantity = ingredient.getAvailableQuantity(LocalDateTime.parse(ingredient.getId()));
+            DishIngredient dishIngredient = dishOrder
+                .getDish()
+                .getDishIngredients()
+                .stream()
+                .filter(di -> di.getIdIngredient().equals(ingredient.getId()))
+                .findFirst()
+                .orElseThrow();
+
+            if (availableQuantity < dishIngredient.getRequiredQuantity()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isOrderConfirmed(String orderId) throws SQLException {
+        String query = "SELECT COUNT(*) FROM order_status WHERE id_order = ? AND status = 'CONFIRMED'";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, orderId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // Si au moins un statut CONFIRMÉ existe
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public Order findById(String id) {
         return null;
@@ -72,8 +124,25 @@ public class OrderRepository implements Repository<Order> {
     }
 
     @Override
-    public Order create(Order id) {
-        return null;
+    public Order create(Order order) {
+        String query = "INSERT INTO \"order\" (id,reference update_datetime) VALUES (?, ?,?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, order.getId());
+            stmt.setString(1, order.getReference());
+            stmt.setTimestamp(2, Timestamp.valueOf(order.getUpdatedAt()));
+            stmt.executeUpdate();
+
+            OrderStatus createdStatus = new OrderStatus(order.getId(), "O001", CREATE, order.getUpdatedAt(), order.getUpdatedAt());
+            orderStatusRepository.create(createdStatus);
+
+            for (DishOrder dishOrder : order.getDishOrders()) {
+                dishOrderRepository.create(dishOrder);
+            }
+            return this.findById(order.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
