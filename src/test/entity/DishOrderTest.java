@@ -15,7 +15,7 @@ class DishOrderTest {
 
     @Test
     void get_actual_status(){
-        DishOrderStatus expected = new DishOrderStatus("DISH-ORDER-STATUS-3", "FIRST-DISH-ORDER-ID", IN_PREPARATION, LocalDateTime.parse("2025-01-01T01:30:00"), LocalDateTime.parse("2025-01-01T01:30:00"));
+        DishOrderStatus expected = new DishOrderStatus("DOS003", "DO001", IN_PREPARATION, LocalDateTime.parse("2025-10-10T01:30:00"), LocalDateTime.parse("2025-10-10T01:30:00"));
 
         DishOrderStatus actual = subject.getActualStatus();
 
