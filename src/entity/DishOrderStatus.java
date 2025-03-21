@@ -6,11 +6,11 @@ import java.util.Objects;
 public class DishOrderStatus {
     private String id;
     private String dishOrderId;
-    private OrderStatus status;
+    private StatusHistory status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public DishOrderStatus(String id, String dishOrderId, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public DishOrderStatus(String id, String dishOrderId, StatusHistory status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.dishOrderId = dishOrderId;
         this.status = status;
@@ -34,11 +34,11 @@ public class DishOrderStatus {
         this.dishOrderId = dishOrderId;
     }
 
-    public OrderStatus getStatus() {
+    public StatusHistory getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
+    public void setStatus(StatusHistory status) {
         this.status = status;
     }
 

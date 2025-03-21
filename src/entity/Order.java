@@ -1,7 +1,8 @@
 package entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Order {
@@ -9,14 +10,37 @@ public class Order {
     private String reference;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<DishOrder> dishOrders;
+    private ArrayList<DishOrder> dishOrders;
+    private ArrayList<OrderStatus> statusHistories;
 
-    public Order(String id, String reference, LocalDateTime createdAt, LocalDateTime updatedAt, List<DishOrder> dishOrders) {
+    public BigDecimal getTotalAmount(){
+        return this.getDishOrders()
+            .stream()
+            .map(DishOrder::getCost)
+            .reduce(BigDecimal::add)
+            .orElse(BigDecimal.ZERO);
+    }
+
+    public void addDishOrder(DishOrder dishOrder){
+        this.dishOrders.add(dishOrder);
+    }
+
+    public Order(String id, String reference, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.reference = reference;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.dishOrders = new ArrayList<>();
+        this.statusHistories = new ArrayList<>();
+    }
+
+    public Order(String id, String reference, LocalDateTime createdAt, LocalDateTime updatedAt, ArrayList<DishOrder> dishOrders, ArrayList<OrderStatus> statusHistories) {
         this.id = id;
         this.reference = reference;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.dishOrders = dishOrders;
+        this.statusHistories = statusHistories;
     }
 
     public String getId() {
@@ -51,24 +75,32 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public List<DishOrder> getDishOrders() {
+    public ArrayList<DishOrder> getDishOrders() {
         return dishOrders;
     }
 
-    public void setDishOrders(List<DishOrder> dishOrders) {
+    public void setDishOrders(ArrayList<DishOrder> dishOrders) {
         this.dishOrders = dishOrders;
+    }
+
+    public ArrayList<OrderStatus> getStatusHistories() {
+        return statusHistories;
+    }
+
+    public void setStatusHistories(ArrayList<OrderStatus> statusHistories) {
+        this.statusHistories = statusHistories;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(id, order.id) && Objects.equals(reference, order.reference) && Objects.equals(createdAt, order.createdAt) && Objects.equals(updatedAt, order.updatedAt) && Objects.equals(dishOrders, order.dishOrders);
+        return Objects.equals(id, order.id) && Objects.equals(reference, order.reference) && Objects.equals(createdAt, order.createdAt) && Objects.equals(updatedAt, order.updatedAt) && Objects.equals(dishOrders, order.dishOrders) && Objects.equals(statusHistories, order.statusHistories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, reference, createdAt, updatedAt, dishOrders);
+        return Objects.hash(id, reference, createdAt, updatedAt, dishOrders, statusHistories);
     }
 
     @Override
@@ -79,6 +111,7 @@ public class Order {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", dishOrders=" + dishOrders +
+                ", statusHistories=" + statusHistories +
                 '}';
     }
 }

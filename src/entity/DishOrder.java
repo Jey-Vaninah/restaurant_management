@@ -1,9 +1,10 @@
 package entity;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static entity.OrderStatus.CREATE;
+import static entity.StatusHistory.CREATE;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 
@@ -24,6 +25,10 @@ public class DishOrder {
                 }
                 return 0;
             }).orElse(new DishOrderStatus(randomUUID().toString(), this.getId(), CREATE, now(), now()));
+    }
+
+    public BigDecimal getCost(){
+        return this.dish.getUnitPrice().multiply(new BigDecimal(this.quantity));
     }
 
     public DishOrder(String id, String orderId, Dish dish, int quantity, List<DishOrderStatus> dishOrderStatus) {
