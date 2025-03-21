@@ -1,10 +1,12 @@
 package repository;
 
 import entity.DishOrder;
+import entity.Ingredient;
 import entity.Order;
 import entity.OrderStatus;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class OrderRepository implements Repository<Order> {
         this.dishOrderRepository = new DishOrderRepository(connection);
     }
 
-    private Order resultSetToOrderStatus(ResultSet rs) throws SQLException {
+    private Order resultSetToOrder(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         List<OrderStatus> orderStatuses = orderStatusRepository.findByOrderId(id);
         List<DishOrder> dishOrders = dishOrderRepository.findByOrderId(id);
@@ -34,6 +36,24 @@ public class OrderRepository implements Repository<Order> {
             new ArrayList<>(dishOrders),
             new ArrayList<>(orderStatuses)
         );
+    }
+
+    public Order findByReference(String ref) {
+        String query = """
+            select * from "order" where reference = ?;
+        """;
+
+        try{
+            PreparedStatement st = connection.prepareStatement(query);
+            st.setString(1, ref);
+            ResultSet rs = st.executeQuery();
+            if(rs.next()) {
+                return resultSetToOrder(rs);
+            }
+            return null;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

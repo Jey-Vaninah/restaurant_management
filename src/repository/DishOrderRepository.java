@@ -39,7 +39,7 @@ public class DishOrderRepository implements Repository<DishOrder> {
     public List<DishOrder> findByOrderId(String orderId) {
         List<DishOrder> dishOrders = new ArrayList<>();
         String query = """
-            select * from "dish_oder" where id_order = ? order by created_at desc;
+            select * from "dish_order" where id_order = ? order by id asc;
         """;
 
         try {
@@ -56,6 +56,21 @@ public class DishOrderRepository implements Repository<DishOrder> {
     }
 
     @Override
+    public DishOrder create(DishOrder dishOrder) {
+        String query = "insert into dish_order(id_order, id_dish, quantity) values (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, dishOrder.getOrderId());
+            stmt.setString(2, dishOrder.getDish().getId());
+            stmt.setInt(3, dishOrder.getQuantity());
+            stmt.executeUpdate();
+            return dishOrder;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error creating DishOrder: " + e.getMessage(), e);
+        }
+    }
+
+
+    @Override
     public DishOrder findById(String id) {
         return null;
     }
@@ -67,11 +82,6 @@ public class DishOrderRepository implements Repository<DishOrder> {
 
     @Override
     public DishOrder deleteById(String id) {
-        return null;
-    }
-
-    @Override
-    public DishOrder create(DishOrder id) {
         return null;
     }
 

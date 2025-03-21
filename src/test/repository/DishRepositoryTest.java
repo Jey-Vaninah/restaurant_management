@@ -38,7 +38,7 @@ class DishRepositoryTest {
 
     @Test
     void find_all_ok() {
-        List<Dish> expecteds = List.of(hotDog());
+        List<Dish> expecteds = List.of(hotDog(), omelette());
 
         List<Dish> actuals = subject.findAll(pagination(), order());
 

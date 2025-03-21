@@ -30,7 +30,7 @@ public class DishOrderStatusRepository implements Repository<DishOrderStatus> {
     public List<DishOrderStatus> findByDishOrderId(String dishOrderId) {
         List<DishOrderStatus> dishOrderStatuses = new ArrayList<>();
         String query = """
-            select * from "dish_order_status" where id_dish_order = ? order by created_at desc
+            select * from "dish_order_status" where id_dish_order = ? order by "id" asc 
         """;
 
         try {

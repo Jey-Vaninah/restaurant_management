@@ -23,4 +23,16 @@ public class DishTestDataUtils {
             )
         );
     }
+
+    public static Dish omelette() {
+        return new Dish(
+            "D002",
+            "Omelette",
+            new BigDecimal("10000.00"),
+            List.of(oeuf()),
+            List.of(
+                new DishIngredient("D002", "I003", 2f, U)
+            )
+        );
+    }
 }

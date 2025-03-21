@@ -8,6 +8,7 @@ import java.util.List;
 
 import static entity.StatusHistory.*;
 import static test.utils.DishTestDataUtils.hotDog;
+import static test.utils.DishTestDataUtils.omelette;
 
 public class DishOrderTestDataUtils {
     public static DishOrder hotDogDishOrder() {
@@ -23,6 +24,16 @@ public class DishOrderTestDataUtils {
             hotDog(),
             3,
             dishOrderStatus
+        );
+    }
+
+    public static DishOrder omeletteDishOrder() {
+        return new DishOrder(
+            "DO002",
+           "O001",
+            omelette(),
+            2,
+            List.of()
         );
     }
 }

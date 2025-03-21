@@ -1,5 +1,8 @@
 insert into dish_order (id,id_order, id_dish, quantity) values
-('DO001','O001','D001', 3);
+    ('DO001','O001','D001', 3);
+
+insert into dish_order (id,id_order, id_dish, quantity) values
+    ('DO002','O001','D002', 2);
 
 
 

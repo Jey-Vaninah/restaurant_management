@@ -27,7 +27,6 @@ class IngredientStockMovementRepositoryTest {
     private final IngredientStockMovementRepository subject = new IngredientStockMovementRepository(connection);
     private final PriceHistoryRepository priceHistoryRepository = new PriceHistoryRepository(connection);
     private final IngredientRepository ingredientRepository = new IngredientRepository(connection);
-    private final IngredientStockMovementRepository ingredientStockMovementRepository = new IngredientStockMovementRepository(connection);
 
     @BeforeEach()
     void beforeEach(){
@@ -47,15 +46,15 @@ class IngredientStockMovementRepositoryTest {
             this.priceHistoryRepository.deleteById(priceHistory.getId());
         });
 
-        sel().getIngredientStocks().forEach(ingredientStockMovement ->  this.ingredientStockMovementRepository.deleteById(ingredientStockMovement.id()));
-        riz().getIngredientStocks().forEach(ingredientStockMovement ->  this.ingredientStockMovementRepository.deleteById(ingredientStockMovement.id()));
+        sel().getIngredientStocks().forEach(ingredientStockMovement ->  this.subject.deleteById(ingredientStockMovement.id()));
+        riz().getIngredientStocks().forEach(ingredientStockMovement ->  this.subject.deleteById(ingredientStockMovement.id()));
 
         this.ingredientRepository.deleteById(sel().getId());
         this.ingredientRepository.deleteById(riz().getId());
     }
 
     void saveStocks(Ingredient ingredient){
-        sel().getIngredientStocks().forEach(this.ingredientStockMovementRepository::create);
+        sel().getIngredientStocks().forEach(this.subject::create);
     }
 
     @Test

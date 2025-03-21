@@ -8,14 +8,14 @@ public class OrderStatus {
     private String idOrder;
     private StatusHistory status;
     private LocalDateTime updatedAt;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
 
-    public OrderStatus(String id, String idOrder, StatusHistory status, LocalDateTime updatedAt, LocalDateTime createdDate) {
+    public OrderStatus(String id, String idOrder, StatusHistory status, LocalDateTime updatedAt, LocalDateTime createdAt) {
         this.id = id;
         this.idOrder = idOrder;
         this.status = status;
         this.updatedAt = updatedAt;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
     }
 
     public String getId() {
@@ -50,24 +50,24 @@ public class OrderStatus {
         this.updatedAt = updatedAt;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         OrderStatus that = (OrderStatus) o;
-        return Objects.equals(id, that.id) && Objects.equals(idOrder, that.idOrder) && status == that.status && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdDate, that.createdDate);
+        return Objects.equals(id, that.id) && Objects.equals(idOrder, that.idOrder) && status == that.status && Objects.equals(updatedAt, that.updatedAt) && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idOrder, status, updatedAt, createdDate);
+        return Objects.hash(id, idOrder, status, updatedAt, createdAt);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class OrderStatus {
                 ", idOrder='" + idOrder + '\'' +
                 ", status=" + status +
                 ", updatedAt=" + updatedAt +
-                ", createdDate=" + createdDate +
+                ", createdDate=" + createdAt +
                 '}';
     }
 }

@@ -30,7 +30,7 @@ public class OrderStatusRepository implements Repository<OrderStatus> {
     public List<OrderStatus> findByOrderId(String orderId) {
         List<OrderStatus> orderStatuses = new ArrayList<>();
         String query = """
-            select * from "order_status" where id_order = ? order by created_at desc
+            select * from "order_status" where id_order = ? order by id asc
         """;
 
         try {

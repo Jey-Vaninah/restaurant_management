@@ -3,7 +3,12 @@ package entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import static entity.StatusHistory.CREATE;
+import static java.time.LocalDateTime.now;
+import static java.util.UUID.randomUUID;
 
 public class Order {
     private String id;
@@ -21,9 +26,27 @@ public class Order {
             .orElse(BigDecimal.ZERO);
     }
 
-    public void addDishOrder(DishOrder dishOrder){
-        this.dishOrders.add(dishOrder);
+    public OrderStatus getActualStatus(){
+        return this.statusHistories
+            .stream().max((a, b) -> {
+                if (a.getCreatedAt().isAfter(b.getCreatedAt())) {
+                    return 1;
+                } else if (a.getCreatedAt().isBefore(b.getCreatedAt())) {
+                    return -1;
+                }
+                return 0;
+            }).orElse(new OrderStatus(randomUUID().toString(), this.getId(), CREATE, now(), now()));
     }
+
+    public List<DishOrder> addDishOrders(List<DishOrder> dishOrders) {
+        OrderStatus actualStatus = this.getActualStatus();
+        if (!CREATE.equals(actualStatus.getStatus())) {
+            throw new RuntimeException("Only CREATE status can be updated");
+        }
+        this.dishOrders.addAll(dishOrders);
+        return dishOrders;
+    }
+
 
     public Order(String id, String reference, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

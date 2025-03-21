@@ -7,14 +7,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static test.utils.OrderTestDataUtils.hotDogOrder;
+import static test.utils.OrderTestDataUtils.firstOrder;
 
 class OrderTest {
-    Order subject = hotDogOrder();
+    Order subject = firstOrder();
 
     @Test
     void get_total_amount() {
-        BigDecimal expected = new BigDecimal("45000.00");
+        BigDecimal expected = new BigDecimal("65000.00");
 
         BigDecimal actual = subject.getTotalAmount();
 
