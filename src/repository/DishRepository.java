@@ -88,7 +88,7 @@ public class DishRepository implements Repository<Dish> {
     }
 
     @Override
-    public Dish create(Dish toCreate) {
+    public Dish save(Dish toCreate) {
         String query = """
             insert into "dish"("id", "name", "unit_price")
             values (?, ?, ?);
@@ -129,9 +129,14 @@ public class DishRepository implements Repository<Dish> {
     public Dish crupdate(Dish crupdateDish) {
         final boolean isCreate = this.findById(crupdateDish.getId()) == null;
         if (isCreate) {
-            return this.create(crupdateDish);
+            return this.save(crupdateDish);
         }
 
         return this.update(crupdateDish);
+    }
+
+    @Override
+    public List<Dish> saveAll(List<Dish> list) {
+        return List.of();
     }
 }

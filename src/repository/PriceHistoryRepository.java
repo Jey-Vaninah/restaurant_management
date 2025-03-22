@@ -84,7 +84,7 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
     }
 
     @Override
-    public PriceHistory create(PriceHistory toCreate) {
+    public PriceHistory save(PriceHistory toCreate) {
         String query = """
             insert into "ingredient_price_history"("id", "id_ingredient", "price_datetime", "unit_price")
             values (?, ?, ?, ?);
@@ -111,5 +111,10 @@ public class PriceHistoryRepository implements Repository<PriceHistory>{
     @Override
     public PriceHistory crupdate(PriceHistory id) {
         throw new RuntimeException("no implemented");
+    }
+
+    @Override
+    public List<PriceHistory> saveAll(List<PriceHistory> list) {
+        return List.of();
     }
 }

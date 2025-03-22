@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static entity.StatusHistory.CREATED;
-import static entity.StatusHistory.SERVED;
+import static entity.StatusHistory.*;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 
@@ -19,6 +18,62 @@ public class Order {
     private LocalDateTime updatedAt;
     private ArrayList<DishOrder> dishOrders;
     private ArrayList<OrderStatus> statusHistories;
+
+    public Order() {
+        this.id = randomUUID().toString();
+        this.reference = randomUUID().toString();
+        this.updatedAt = now();
+        this.createdAt = now();
+        this.dishOrders = new ArrayList<>();
+        this.statusHistories = new ArrayList<>(List.of(
+            new OrderStatus(randomUUID().toString(), this.id, CREATED, now(), now())
+        ));
+    }
+
+    public void confirm(){
+        this.checkIngredientsAvailable();
+        this.dishOrders.forEach(di -> {
+            di.updateStatus(CONFIRMED);
+        });
+
+        this.statusHistories.add(new OrderStatus(randomUUID().toString(), this.id, CONFIRMED, now(), now()));
+    }
+
+    public void prepare(){
+        this.dishOrders.forEach(di -> {
+            di.updateStatus(IN_PREPARATION);
+        });
+        this.statusHistories.add(new OrderStatus(randomUUID().toString(), this.id, IN_PREPARATION, now(), now()));
+    }
+
+    public void serve(){
+        boolean isAllFinished = this.dishOrders.stream().allMatch(di -> di.getActualStatus().getStatus().equals(COMPLETED));
+        if(!isAllFinished){
+            throw new RuntimeException("All dish orders have not been completed");
+        }
+
+        this.dishOrders.forEach(di -> {
+            di.updateStatus(SERVED);
+        });
+
+        this.statusHistories.add(new OrderStatus(randomUUID().toString(), this.id, SERVED, now(), now()));
+    }
+
+    public void compeleteDishOrder(String dishOrderId) {
+        DishOrder dishOrder = this.dishOrders.stream().filter(di -> di.getOrderId().equals(dishOrderId)).findFirst().orElse(null);
+        if(dishOrder == null){
+            throw new RuntimeException("Dish order not found");
+        }
+
+        boolean isAllFinished = this.dishOrders.stream().allMatch(di -> di.getActualStatus().getStatus().equals(COMPLETED));
+        if(!isAllFinished){
+            return;
+        }
+        this.dishOrders.forEach(di -> {
+            di.updateStatus(COMPLETED);
+        });
+        this.statusHistories.add(new OrderStatus(randomUUID().toString(), this.id, COMPLETED, now(), now()));
+    }
 
     public Duration getOrderDuration() {
         LocalDateTime created = this.createdAt;
@@ -77,6 +132,30 @@ public class Order {
         return dishOrders;
     }
 
+    public void checkIngredientsAvailable() {
+        for(DishOrder dishOrder : this.getDishOrders()) {
+            List<Ingredient> ingredients = dishOrder.getDish().getIngredients();
+            for (Ingredient ingredient : ingredients) {
+                float availableQuantity = ingredient.getAvailableQuantity(LocalDateTime.parse(ingredient.getId()));
+                DishIngredient dishIngredient = dishOrder
+                        .getDish()
+                        .getDishIngredients()
+                        .stream()
+                        .filter(di -> di.getIdIngredient().equals(ingredient.getId()))
+                        .findFirst()
+                        .orElseThrow();
+
+                if (availableQuantity < dishIngredient.getRequiredQuantity()) {
+                    throw new RuntimeException("Ingredient " + ingredient.getId() + " is too low");
+                }
+            }
+        }
+    }
+
+    public boolean isOrderConfirmed(){
+        List<OrderStatus> orderStatuses = this.getStatusHistories().stream().filter(status -> status.getStatus().equals(CONFIRMED)).toList();
+        return orderStatuses.size() > 0;
+    }
 
     public Order(String id, String reference, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
@@ -84,7 +163,9 @@ public class Order {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.dishOrders = new ArrayList<>();
-        this.statusHistories = new ArrayList<>();
+        this.statusHistories = new ArrayList<>(List.of(
+            new OrderStatus(randomUUID().toString(), this.id, CREATED, now(), now())
+        ));
     }
 
     public Order(String id, String reference, LocalDateTime createdAt, LocalDateTime updatedAt, ArrayList<DishOrder> dishOrders, ArrayList<OrderStatus> statusHistories) {

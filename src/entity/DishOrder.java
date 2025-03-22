@@ -1,6 +1,7 @@
 package entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,6 +15,10 @@ public class DishOrder {
     private Dish dish;
     private int quantity;
     private List<DishOrderStatus> dishOrderStatus;
+
+    public void addStatus(DishOrderStatus dishOrderStatus){
+        this.dishOrderStatus.add(dishOrderStatus);
+    }
 
     public DishOrderStatus getActualStatus(){
         return this.dishOrderStatus
@@ -29,6 +34,27 @@ public class DishOrder {
 
     public BigDecimal getCost(){
         return this.dish.getUnitPrice().multiply(new BigDecimal(this.quantity));
+    }
+
+    public DishOrderStatus updateStatus(StatusHistory statusHistory){
+        DishOrderStatus status = new DishOrderStatus(
+            randomUUID().toString(),
+            this.getId(),
+            statusHistory,
+            now(),
+            now()
+        );
+
+        this.dishOrderStatus.add(status);
+        return status;
+    }
+
+    public DishOrder(String id, String orderId, Dish dish, int quantity) {
+        this.id = id;
+        this.orderId = orderId;
+        this.dish = dish;
+        this.quantity = quantity;
+        this.dishOrderStatus = new ArrayList<>();
     }
 
     public DishOrder(String id, String orderId, Dish dish, int quantity, List<DishOrderStatus> dishOrderStatus) {
@@ -81,6 +107,7 @@ public class DishOrder {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DishOrder dishOrder = (DishOrder) o;
         return quantity == dishOrder.quantity && Objects.equals(id, dishOrder.id) && Objects.equals(orderId, dishOrder.orderId) && Objects.equals(dish, dishOrder.dish) && Objects.equals(dishOrderStatus, dishOrder.dishOrderStatus);

@@ -114,7 +114,7 @@ public class IngredientRepository implements Repository<Ingredient> {
     }
 
     @Override
-    public Ingredient create(Ingredient toCreate) {
+    public Ingredient save(Ingredient toCreate) {
         String query = """
             insert into "ingredient"("id", "name", "update_datetime", "unit_price", "unit")
             values (?, ?, ?, ?, ?);
@@ -161,7 +161,7 @@ public class IngredientRepository implements Repository<Ingredient> {
     public Ingredient crupdate(Ingredient crupdateIngredient) {
         final boolean isCreate = this.findById(crupdateIngredient.getId()) == null;
         if(isCreate) {
-            return this.create(crupdateIngredient);
+            return this.save(crupdateIngredient);
         }
         return this.update(crupdateIngredient);
     }
@@ -228,5 +228,10 @@ public class IngredientRepository implements Repository<Ingredient> {
             throw new RuntimeException(error.getMessage());
         }
         return ingredients;
+    }
+
+    @Override
+    public List<Ingredient> saveAll(List<Ingredient> list) {
+        return List.of();
     }
 }

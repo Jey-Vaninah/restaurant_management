@@ -30,11 +30,11 @@ class IngredientStockMovementRepositoryTest {
 
     @BeforeEach()
     void beforeEach(){
-        this.ingredientRepository.create(sel());
-        this.ingredientRepository.create(riz());
+        this.ingredientRepository.save(sel());
+        this.ingredientRepository.save(riz());
 
-        sel().getPriceHistories().forEach(this.priceHistoryRepository::create);
-        riz().getPriceHistories().forEach(this.priceHistoryRepository::create);
+        sel().getPriceHistories().forEach(this.priceHistoryRepository::save);
+        riz().getPriceHistories().forEach(this.priceHistoryRepository::save);
     }
 
     @AfterEach()
@@ -54,7 +54,7 @@ class IngredientStockMovementRepositoryTest {
     }
 
     void saveStocks(Ingredient ingredient){
-        sel().getIngredientStocks().forEach(this.subject::create);
+        sel().getIngredientStocks().forEach(this.subject::save);
     }
 
     @Test

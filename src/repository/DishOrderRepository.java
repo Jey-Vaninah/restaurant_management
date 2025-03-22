@@ -4,10 +4,7 @@ import entity.Dish;
 import entity.DishOrder;
 import entity.DishOrderStatus;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +25,11 @@ public class DishOrderRepository implements Repository<DishOrder> {
         List<DishOrderStatus> dishOrderStatuses = dishOrderStatusRepository.findByDishOrderId(id);
 
         return new DishOrder(
-            id,
-            rs.getString("id_order"),
-            dish,
-            rs.getInt("quantity"),
-            dishOrderStatuses
+                id,
+                rs.getString("id_order"),
+                dish,
+                rs.getInt("quantity"),
+                dishOrderStatuses
         );
     }
 
@@ -46,7 +43,7 @@ public class DishOrderRepository implements Repository<DishOrder> {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, orderId);
             ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 dishOrders.add(resultSetToDishOrder(rs));
             }
         } catch (SQLException e) {
@@ -56,7 +53,7 @@ public class DishOrderRepository implements Repository<DishOrder> {
     }
 
     @Override
-    public DishOrder create(DishOrder dishOrder) {
+    public DishOrder save(DishOrder dishOrder) {
         String query = "insert into dish_order(id, id_order, id_dish, quantity) values (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, dishOrder.getId());
@@ -73,7 +70,9 @@ public class DishOrderRepository implements Repository<DishOrder> {
 
     @Override
     public DishOrder findById(String id) {
-        String query = "SELECT * FROM dish_order WHERE id = ?";
+        String query = """
+            SELECT dish_order.id, dish_order. FROM dish_order inner join dish on dish.id = dish_order.id WHERE id = ?";
+         """;
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -97,12 +96,39 @@ public class DishOrderRepository implements Repository<DishOrder> {
     }
 
     @Override
-    public DishOrder update(DishOrder id) {
-        return null;
+    public DishOrder update(DishOrder toUpdate) {
+        String query = """
+            update "dishOrder" 
+                set "order_id" = ?, 
+                    "dish_id" = ? , 
+                    "quantity" = ? ,   
+                where "id" = ?
+        """;
+        try{
+            PreparedStatement prs = connection.prepareStatement(query);
+            prs.setString (1, toUpdate.getOrderId());
+            prs.setString(2, toUpdate.getDish().getId());
+            prs.setInt(3, toUpdate.getQuantity());
+            prs.executeUpdate();
+            return this.findById(toUpdate.getId());
+        }catch (SQLException error){
+            throw new RuntimeException(error);
+        }
     }
 
     @Override
-    public DishOrder crupdate(DishOrder id) {
-        return null;
+    public DishOrder crupdate(DishOrder crupdateDishOrder) {
+        final boolean isCreate = this.findById(crupdateDishOrder.getId()) == null;
+        if (isCreate) {
+            return this.save(crupdateDishOrder);
+        }
+        return this.update(crupdateDishOrder);
+    }
+
+    @Override
+    public List<DishOrder> saveAll(List<DishOrder> list) {
+        return List.of();
     }
 }
+
+

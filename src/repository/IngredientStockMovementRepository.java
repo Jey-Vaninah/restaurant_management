@@ -88,7 +88,7 @@ public class IngredientStockMovementRepository implements Repository<IngredientS
     }
 
     @Override
-    public IngredientStockMovement create(IngredientStockMovement toCreate) {
+    public IngredientStockMovement save(IngredientStockMovement toCreate) {
         String query = """
             insert into "ingredient_stock_movement"("id", "id_ingredient", "quantity", "movement_datetime", "movement_type", "unit")
             values (?, ?, ?, ?, ?, ?);
@@ -116,5 +116,10 @@ public class IngredientStockMovementRepository implements Repository<IngredientS
     @Override
     public IngredientStockMovement crupdate(IngredientStockMovement id) {
         return null;
+    }
+
+    @Override
+    public List<IngredientStockMovement> saveAll(List<IngredientStockMovement> list) {
+        return List.of();
     }
 }

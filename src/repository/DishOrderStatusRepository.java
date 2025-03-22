@@ -78,21 +78,26 @@ public class DishOrderStatusRepository implements Repository<DishOrderStatus> {
 
     @Override
     public DishOrderStatus deleteById(String id) {
-        return null;
+        throw new RuntimeException("Not Implemented");
     }
 
     @Override
-    public DishOrderStatus create(DishOrderStatus id) {
-        return null;
+    public DishOrderStatus save(DishOrderStatus id) {
+        throw new RuntimeException("Not Implemented");
     }
 
     @Override
     public DishOrderStatus update(DishOrderStatus id) {
-        return null;
+        throw new RuntimeException("Not Implemented");
     }
 
     @Override
     public DishOrderStatus crupdate(DishOrderStatus id) {
-        return null;
+        throw new RuntimeException("Not Implemented");
+    }
+
+    @Override
+    public List<DishOrderStatus> saveAll(List<DishOrderStatus> list) {
+        return List.of();
     }
 }

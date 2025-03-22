@@ -63,7 +63,7 @@ public class DishIngredientRepository implements Repository<DishIngredient> {
     }
 
     @Override
-    public DishIngredient create(DishIngredient id) {
+    public DishIngredient save(DishIngredient id) {
         throw new RuntimeException("Not Implemented");
     }
 
@@ -75,5 +75,10 @@ public class DishIngredientRepository implements Repository<DishIngredient> {
     @Override
     public DishIngredient crupdate(DishIngredient id) {
         throw new RuntimeException("Not Implemented");
+    }
+
+    @Override
+    public List<DishIngredient> saveAll(List<DishIngredient> list) {
+        return List.of();
     }
 }

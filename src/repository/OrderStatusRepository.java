@@ -85,7 +85,7 @@ public class OrderStatusRepository implements Repository<OrderStatus> {
     }
 
     @Override
-    public OrderStatus create(OrderStatus id) {
+    public OrderStatus save(OrderStatus id) {
         return null;
     }
 
@@ -97,5 +97,10 @@ public class OrderStatusRepository implements Repository<OrderStatus> {
     @Override
     public OrderStatus crupdate(OrderStatus id) {
         return null;
+    }
+
+    @Override
+    public List<OrderStatus> saveAll(List<OrderStatus> list) {
+        return List.of();
     }
 }
